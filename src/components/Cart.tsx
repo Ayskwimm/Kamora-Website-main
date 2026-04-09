@@ -12,18 +12,30 @@ type OrderDetails = {
     quantity: number;
   }>;
   total: number;
-  paymentMethod: 'gcash' | 'cod';
+  paymentMethod: 'gcash';
   orderNumber: string;
   orderDate: string;
+  pickupDate: string;
+  pickupTime: string;
+  pickupOption: 'store' | 'rider' | null;
+  customerName: string;
+  phoneNumber: string;
 };
 
 const Cart: React.FC = () => {
   const { cart, removeItem, updateQuantity, clearCart } = useCart();
   const [isCheckout, setIsCheckout] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'gcash' | 'cod'>('gcash');
+  const [paymentMethod, setPaymentMethod] = useState<'gcash'>('gcash');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  
+  // New form fields
+  const [pickupDate, setPickupDate] = useState('');
+  const [pickupTime, setPickupTime] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [pickupOption, setPickupOption] = useState<'store' | 'rider' | null>(null);
 
   const generateOrderNumber = () => {
     return 'KAM' + Date.now().toString().slice(-8);
@@ -40,7 +52,15 @@ const Cart: React.FC = () => {
   };
 
   const handleCheckout = () => {
-    setIsCheckout(true);
+    if (!pickupOption) {
+      console.log('Checkout blocked: No pickup option selected');
+      return;
+    }
+    
+    if (!pickupDate || !pickupTime || !customerName || phoneNumber.length !== 11) {
+      console.log('Checkout blocked: Missing required fields');
+      return;
+    }
     
     // Generate order details immediately
     const orderNumber = generateOrderNumber();
@@ -52,19 +72,48 @@ const Cart: React.FC = () => {
       total: cart.total,
       paymentMethod,
       orderNumber,
-      orderDate
+      orderDate,
+      pickupDate,
+      pickupTime,
+      customerName,
+      phoneNumber,
+      pickupOption
     };
     
     setOrderDetails(newOrderDetails);
-    setIsCheckout(false);
     setShowConfirmation(true);
+    clearCart();
+  };
+
+  const isSunday = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.getDay() === 0; // 0 = Sunday
+  };
+
+  const validatePickupDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    // Auto-hide confirmation and show receipt after 1.5 seconds
-    setTimeout(() => {
-      setShowConfirmation(false);
-      setShowReceipt(true);
-      clearCart();
-    }, 1500);
+    // Check if date is within 1 week and not Sunday
+    const oneWeekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    return date >= today && date <= oneWeekFromNow && !isSunday(dateString);
+  };
+
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 8; hour <= 19; hour++) {
+      const startTime = `${hour.toString().padStart(2, '0')}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
+      const endTime = `${(hour + 1).toString().padStart(2, '0')}:00 ${hour + 1 >= 12 ? 'PM' : 'AM'}`;
+      const displayTime = hour === 12 ? '12:00 PM - 1:00 PM' : 
+                         hour === 11 ? '11:00 AM - 12:00 PM' :
+                         `${startTime} - ${endTime}`;
+      slots.push({
+        value: `${hour}:00-${hour + 1}:00`,
+        display: displayTime
+      });
+    }
+    return slots;
   };
 
   const captureReceipt = async (format: 'pdf' | 'image') => {
@@ -136,7 +185,13 @@ const Cart: React.FC = () => {
           yPos += 30;
           ctx.fillText(`Date: ${orderDetails.orderDate}`, 50, yPos);
           yPos += 30;
-          ctx.fillText(`Payment: ${orderDetails.paymentMethod === 'gcash' ? 'GCash' : 'Cash on Delivery'}`, 50, yPos);
+          ctx.fillText(`Customer Name: ${orderDetails.customerName}`, 50, yPos);
+          yPos += 30;
+          ctx.fillText(`Phone Number: ${orderDetails.phoneNumber}`, 50, yPos);
+          yPos += 30;
+          ctx.fillText(`Pickup Date: ${orderDetails.pickupDate}`, 50, yPos);
+          yPos += 30;
+          ctx.fillText(`Payment: ${orderDetails.paymentMethod === 'gcash' ? 'GCash' : 'GCash'}`, 50, yPos);
           yPos += 50;
           
           // Add items
@@ -251,6 +306,106 @@ const Cart: React.FC = () => {
           </span>
         </div>
 
+        {/* Customer Information */}
+        <div className="space-y-4 mb-4">
+          {/* Name Input */}
+          <div className="bg-kamora-cream rounded-lg p-4">
+            <label className="block text-sm font-medium text-kamora-dark mb-2">
+              Full Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={customerName}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Only allow letters and spaces
+                const lettersOnly = value.replace(/[^a-zA-Z\s]/g, '');
+                setCustomerName(lettersOnly);
+              }}
+              placeholder="Enter your full name"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
+              required
+            />
+            {customerName && /[^a-zA-Z\s]/.test(customerName) && (
+              <p className="text-red-500 text-sm mt-1">Only letters and spaces are allowed</p>
+            )}
+          </div>
+          
+          {/* Phone Number Input */}
+          <div className="bg-kamora-cream rounded-lg p-4">
+            <label className="block text-sm font-medium text-kamora-dark mb-2">
+              Phone Number <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Only allow numbers, limit to 11 digits
+                const numbersOnly = value.replace(/\D/g, '').slice(0, 11);
+                setPhoneNumber(numbersOnly);
+              }}
+              placeholder="Enter 11-digit phone number"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
+              maxLength={11}
+              required
+            />
+            {phoneNumber.length > 0 && phoneNumber.length < 11 && (
+              <p className="text-red-500 text-sm mt-1">Phone number must be exactly 11 digits</p>
+            )}
+          </div>
+          
+          {/* Date Pickup Input */}
+          <div className="bg-kamora-cream rounded-lg p-4">
+            <label className="block text-sm font-medium text-kamora-dark mb-2">
+              Pickup Date <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              value={pickupDate}
+              onChange={(e) => {
+                const selectedDate = e.target.value;
+                if (validatePickupDate(selectedDate)) {
+                  setPickupDate(selectedDate);
+                }
+              }}
+              min={new Date().toISOString().split('T')[0]}
+              max={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
+              required
+              style={{
+                colorScheme: 'light'
+              }}
+            />
+            <p className="text-gray-500 text-sm mt-1">
+              Select a date within 1 week from today
+            </p>
+          </div>
+          
+          {/* Pickup Time Input */}
+          <div className="bg-kamora-cream rounded-lg p-4">
+            <label className="block text-sm font-medium text-kamora-dark mb-2">
+              Pickup Time <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={pickupTime}
+              onChange={(e) => setPickupTime(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
+              required
+            >
+              <option value="">Select a time slot</option>
+              {generateTimeSlots().map((slot) => (
+                <option key={slot.value} value={slot.value}>
+                  {slot.display}
+                </option>
+              ))}
+            </select>
+            <p className="text-gray-500 text-sm mt-1">
+              Select a 1-hour time slot between 8:00 AM and 8:00 PM
+            </p>
+          </div>
+        </div>
+        
         {/* Payment Method Selection */}
         <div className="bg-kamora-cream rounded-lg p-4 mb-4">
           <h4 className="font-semibold text-kamora-dark mb-3">Payment Method</h4>
@@ -261,7 +416,7 @@ const Cart: React.FC = () => {
                 name="payment"
                 value="gcash"
                 checked={paymentMethod === 'gcash'}
-                onChange={(e) => setPaymentMethod(e.target.value as 'gcash' | 'cod')}
+                onChange={(e) => setPaymentMethod('gcash')}
                 className="w-4 h-4 text-kamora-orange"
               />
               <div className="flex items-center space-x-2">
@@ -271,47 +426,105 @@ const Cart: React.FC = () => {
                 <span className="text-sm font-medium">GCash</span>
               </div>
             </label>
-            <label className="flex items-center space-x-3 cursor-pointer">
-              <input
-                type="radio"
-                name="payment"
-                value="cod"
-                checked={paymentMethod === 'cod'}
-                onChange={(e) => setPaymentMethod(e.target.value as 'gcash' | 'cod')}
-                className="w-4 h-4 text-kamora-orange"
-              />
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-green-500 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">💵</span>
-                </div>
-                <span className="text-sm font-medium">Cash on Delivery</span>
-              </div>
-            </label>
           </div>
         </div>
 
 
+        {/* Pickup Option Selection */}
+        {pickupDate && customerName && phoneNumber.length === 11 && pickupTime && (
+          <div className="bg-kamora-cream rounded-lg p-4 mb-4">
+            <h4 className="font-semibold text-kamora-dark mb-3">Choose Pickup Option</h4>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setPickupOption('store')}
+                className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+                  pickupOption === 'store'
+                    ? 'bg-kamora-orange text-white'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                🏪 Pick-up at Store
+              </button>
+              <button
+                onClick={() => setPickupOption('rider')}
+                className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+                  pickupOption === 'rider'
+                    ? 'bg-kamora-orange text-white'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                🛵 Book Your Rider
+              </button>
+            </div>
+          </div>
+        )}
+        
         <Button
           onClick={handleCheckout}
           variant="primary"
-          disabled={isCheckout}
+          disabled={isCheckout || !pickupOption}
           className="w-full"
         >
-          {isCheckout ? 'Processing...' : `Checkout with ${paymentMethod === 'gcash' ? 'GCash' : 'COD'}`}
+          {isCheckout ? 'Processing...' : 'Checkout'}
         </Button>
       </div>
       
-      {/* Confirmation Modal */}
-      {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 max-w-sm mx-4 text-center transform scale-100 animate-pulse">
-            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {/* Order Confirmation Modal - Simple modal for both options */}
+      {showConfirmation && orderDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
+            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Order Successful!</h3>
-            <p className="text-gray-600">Your order has been placed successfully</p>
+            
+            {pickupOption === 'rider' ? (
+              <>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Your order is confirmed!</h3>
+                <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
+                  <p className="text-lg font-semibold mb-2">Here are the details:</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl">📍</span>
+                      <span><strong>Address:</strong> 4031 Gen T. De Leon</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl">📞</span>
+                      <span><strong>Contact:</strong> {orderDetails.phoneNumber}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl">🛵</span>
+                      <span>You may now book via your Shipping provider (ex: Lalamove, Grab Express)</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Your order was successfully placed.</h3>
+              </>
+            )}
+            
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <Button
+                onClick={() => setShowConfirmation(false)}
+                variant="secondary"
+                className="flex-1"
+              >
+                Close
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowConfirmation(false);
+                  setShowReceipt(true);
+                }}
+                variant="primary"
+                className="flex-1"
+              >
+                Show Receipt
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -352,8 +565,20 @@ const Cart: React.FC = () => {
                     <p className="font-semibold">{orderDetails.orderDate}</p>
                   </div>
                   <div>
+                    <p className="text-sm text-gray-500">Customer Name</p>
+                    <p className="font-semibold">{orderDetails.customerName}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Phone Number</p>
+                    <p className="font-semibold">{orderDetails.phoneNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Pickup Date</p>
+                    <p className="font-semibold">{orderDetails.pickupDate}</p>
+                  </div>
+                  <div>
                     <p className="text-sm text-gray-500">Payment Method</p>
-                    <p className="font-semibold">{orderDetails.paymentMethod === 'gcash' ? 'GCash' : 'Cash on Delivery'}</p>
+                    <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod === 'gcash' ? 'GCash' : 'GCash'}</p>
                   </div>
                 </div>
               </div>
@@ -394,7 +619,7 @@ const Cart: React.FC = () => {
               </div>
               
               {/* Actions */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <Button
                   onClick={() => captureReceipt('pdf')}
                   variant="primary"
@@ -409,13 +634,6 @@ const Cart: React.FC = () => {
                 >
                   📸 Save as Photo
                 </Button>
-                <Button
-                  onClick={() => setShowReceipt(false)}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Close
-                </Button>
               </div>
               
               {/* Footer */}
@@ -427,6 +645,7 @@ const Cart: React.FC = () => {
           </div>
         </div>
       )}
+      
     </div>
   );
 };
