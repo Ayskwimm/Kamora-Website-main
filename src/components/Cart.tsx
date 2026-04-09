@@ -24,7 +24,6 @@ type OrderDetails = {
 
 const Cart: React.FC = () => {
   const { cart, removeItem, updateQuantity, clearCart } = useCart();
-  const [isCheckout, setIsCheckout] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'gcash'>('gcash');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
@@ -52,17 +51,12 @@ const Cart: React.FC = () => {
   };
 
   const handleCheckout = () => {
-    if (!pickupOption) {
-      console.log('Checkout blocked: No pickup option selected');
+    // Basic validation
+    if (!pickupOption || cart.items.length === 0) {
       return;
     }
     
-    if (!pickupDate || !pickupTime || !customerName || phoneNumber.length !== 11) {
-      console.log('Checkout blocked: Missing required fields');
-      return;
-    }
-    
-    // Generate order details immediately
+    // Generate order details
     const orderNumber = generateOrderNumber();
     const orderDate = getCurrentDateTime();
     
@@ -82,7 +76,6 @@ const Cart: React.FC = () => {
     
     setOrderDetails(newOrderDetails);
     setShowConfirmation(true);
-    clearCart();
   };
 
   const isSunday = (dateString: string) => {
@@ -462,53 +455,120 @@ const Cart: React.FC = () => {
         <Button
           onClick={handleCheckout}
           variant="primary"
-          disabled={isCheckout || !pickupOption}
+          disabled={cart.items.length === 0 || !pickupOption}
           className="w-full"
         >
-          {isCheckout ? 'Processing...' : 'Checkout'}
+          Checkout
         </Button>
       </div>
       
-      {/* Order Confirmation Modal - Simple modal for both options */}
+      {/* Custom Checkout Modal */}
       {showConfirmation && orderDetails && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
-            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
+          <div className="bg-white rounded-2xl p-8 max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {pickupOption === 'store' ? '🏪 Store Pickup Confirmed' : '🛵 Rider Booking Required'}
+              </h2>
+              <button
+                onClick={() => setShowConfirmation(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
             </div>
-            
-            {pickupOption === 'rider' ? (
-              <>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Your order is confirmed!</h3>
-                <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
-                  <p className="text-lg font-semibold mb-2">Here are the details:</p>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-2xl">📍</span>
-                      <span><strong>Address:</strong> 4031 Gen T. De Leon</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-2xl">📞</span>
-                      <span><strong>Contact:</strong> {orderDetails.phoneNumber}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-2xl">🛵</span>
-                      <span>You may now book via your Shipping provider (ex: Lalamove, Grab Express)</span>
-                    </div>
+
+            {/* Order Summary */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-lg mb-3">Order Summary</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Order Number:</span>
+                  <span className="font-medium">{orderDetails.orderNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Customer:</span>
+                  <span className="font-medium">{orderDetails.customerName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Phone:</span>
+                  <span className="font-medium">{orderDetails.phoneNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Pickup Date:</span>
+                  <span className="font-medium">{orderDetails.pickupDate}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Pickup Time:</span>
+                  <span className="font-medium">{orderDetails.pickupTime.replace('-', ' - ')}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Total Amount:</span>
+                  <span className="font-bold text-kamora-orange">${orderDetails.total.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Pickup Option Specific Content */}
+            {pickupOption === 'store' ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xl">🏪</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-green-800">Store Pickup Ready</h4>
+                    <p className="text-green-600 text-sm">Your order will be prepared for pickup</p>
                   </div>
                 </div>
-              </>
+                <div className="bg-white rounded-lg p-3 space-y-2">
+                  <p className="text-sm"><strong>Store Address:</strong> 4031 Gen T. De Leon, Taguig City</p>
+                  <p className="text-sm"><strong>Operating Hours:</strong> 8:00 AM - 8:00 PM</p>
+                  <p className="text-sm"><strong>What to bring:</strong> Valid ID and order confirmation</p>
+                </div>
+              </div>
             ) : (
-              <>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Your order was successfully placed.</h3>
-              </>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xl">�</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-blue-800">Book Your Delivery Rider</h4>
+                    <p className="text-blue-600 text-sm">Arrange delivery through your preferred service</p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-lg p-3 space-y-3">
+                  <div>
+                    <p className="font-medium text-sm mb-2">Pickup Address for Rider:</p>
+                    <p className="text-sm bg-gray-50 p-2 rounded">4031 Gen T. De Leon, Taguig City</p>
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm mb-2">Recommended Services:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">Lalamove</span>
+                      <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">Grab Express</span>
+                      <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">Angkas</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm mb-1">Delivery Instructions:</p>
+                    <p className="text-sm text-gray-600">Please provide the order number {orderDetails.orderNumber} to the rider</p>
+                  </div>
+                </div>
+              </div>
             )}
-            
-            <div className="mt-6 grid grid-cols-2 gap-3">
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-3">
               <Button
-                onClick={() => setShowConfirmation(false)}
+                onClick={() => {
+                  setShowConfirmation(false);
+                  clearCart();
+                }}
                 variant="secondary"
                 className="flex-1"
               >
@@ -518,11 +578,12 @@ const Cart: React.FC = () => {
                 onClick={() => {
                   setShowConfirmation(false);
                   setShowReceipt(true);
+                  clearCart();
                 }}
                 variant="primary"
                 className="flex-1"
               >
-                Show Receipt
+                View Receipt
               </Button>
             </div>
           </div>
