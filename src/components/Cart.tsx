@@ -193,7 +193,7 @@ const Cart: React.FC = () => {
           yPos += 30;
           
           ctx.font = '14px Arial';
-          orderDetails.items.forEach((item, index) => {
+          orderDetails.items.forEach((item) => {
             ctx.fillText(`${item.name} - Qty: ${item.quantity} × $${item.price.toFixed(2)} = $${(item.price * item.quantity).toFixed(2)}`, 50, yPos);
             yPos += 25;
           });
@@ -224,6 +224,128 @@ const Cart: React.FC = () => {
       window.print();
     }
   };
+
+  // Show receipt modal even if cart is empty (after checkout)
+  if (showReceipt && orderDetails) {
+    return (
+      <>
+        {/* Order Receipt Modal */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div id="receipt-modal-content" className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Receipt Header */}
+            <div className="bg-gradient-to-r from-kamora-orange to-kamora-red text-white p-6 rounded-t-2xl">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">Kamora Order Receipt</h2>
+                  <p className="text-orange-100">Thank you for your order!</p>
+                </div>
+                <button
+                  onClick={() => setShowReceipt(false)}
+                  className="text-white hover:text-orange-200"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            {/* Receipt Content */}
+            <div className="p-6">
+              {/* Order Information */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Order Number</p>
+                    <p className="font-semibold">{orderDetails.orderNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Order Date</p>
+                    <p className="font-semibold">{orderDetails.orderDate}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Customer Name</p>
+                    <p className="font-semibold">{orderDetails.customerName}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Phone Number</p>
+                    <p className="font-semibold">{orderDetails.phoneNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Pickup Date</p>
+                    <p className="font-semibold">{orderDetails.pickupDate}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Payment Method</p>
+                    <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod === 'gcash' ? 'GCash' : 'GCash'}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Order Items */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-4">Order Items</h3>
+                <div className="space-y-3">
+                  {orderDetails.items.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                        <div>
+                          <p className="font-medium">{item.name}</p>
+                          <p className="text-sm text-gray-500">Qty: {item.quantity} × ${item.price.toFixed(2)}</p>
+                        </div>
+                      </div>
+                      <p className="font-semibold text-lg">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Total */}
+              <div className="border-t pt-4 mb-6">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-semibold">Total Amount:</span>
+                  <span className="text-2xl font-bold text-kamora-orange">
+                    ${orderDetails.total.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Actions */}
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  onClick={() => captureReceipt('pdf')}
+                  variant="primary"
+                  className="flex-1"
+                >
+                  Save as PDF
+                </Button>
+                <Button
+                  onClick={() => captureReceipt('image')}
+                  variant="secondary"
+                  className="flex-1"
+                >
+                  Save as Photo
+                </Button>
+              </div>
+              
+              {/* Footer */}
+              <div className="text-center mt-6 text-sm text-gray-500">
+                <p>For inquiries, contact us at support@kamora.com</p>
+                <p>Thank you for choosing Kamora!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   if (cart.items.length === 0) {
     return (
@@ -409,7 +531,7 @@ const Cart: React.FC = () => {
                 name="payment"
                 value="gcash"
                 checked={paymentMethod === 'gcash'}
-                onChange={(e) => setPaymentMethod('gcash')}
+                onChange={() => setPaymentMethod('gcash')}
                 className="w-4 h-4 text-kamora-orange"
               />
               <div className="flex items-center space-x-2">
@@ -520,123 +642,7 @@ const Cart: React.FC = () => {
         </div>
       )}
       
-      {/* Order Receipt Modal */}
-      {showReceipt && orderDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div id="receipt-modal-content" className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Receipt Header */}
-            <div className="bg-gradient-to-r from-kamora-orange to-kamora-red text-white p-6 rounded-t-2xl">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">🍽️ Kamora Order Receipt</h2>
-                  <p className="text-orange-100">Thank you for your order!</p>
-                </div>
-                <button
-                  onClick={() => setShowReceipt(false)}
-                  className="text-white hover:text-orange-200 transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
             
-            {/* Receipt Content */}
-            <div className="p-6">
-              {/* Order Information */}
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Order Number</p>
-                    <p className="font-semibold">{orderDetails.orderNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Order Date</p>
-                    <p className="font-semibold">{orderDetails.orderDate}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Customer Name</p>
-                    <p className="font-semibold">{orderDetails.customerName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Phone Number</p>
-                    <p className="font-semibold">{orderDetails.phoneNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Pickup Date</p>
-                    <p className="font-semibold">{orderDetails.pickupDate}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Payment Method</p>
-                    <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod === 'gcash' ? 'GCash' : 'GCash'}</p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Order Items */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4">Order Items</h3>
-                <div className="space-y-3">
-                  {orderDetails.items.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                        <div>
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-sm text-gray-500">Qty: {item.quantity} × ${item.price.toFixed(2)}</p>
-                        </div>
-                      </div>
-                      <p className="font-semibold text-lg">
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Total */}
-              <div className="border-t pt-4 mb-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">Total Amount:</span>
-                  <span className="text-2xl font-bold text-kamora-orange">
-                    ${orderDetails.total.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Actions */}
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  onClick={() => captureReceipt('pdf')}
-                  variant="primary"
-                  className="flex-1"
-                >
-                  📄 Save as PDF
-                </Button>
-                <Button
-                  onClick={() => captureReceipt('image')}
-                  variant="secondary"
-                  className="flex-1"
-                >
-                  📸 Save as Photo
-                </Button>
-              </div>
-              
-              {/* Footer */}
-              <div className="text-center mt-6 text-sm text-gray-500">
-                <p>For inquiries, contact us at support@kamora.com</p>
-                <p>Thank you for choosing Kamora! 🍽️</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
     </div>
   );
 };
