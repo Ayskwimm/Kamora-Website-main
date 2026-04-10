@@ -51,8 +51,15 @@ const Cart: React.FC = () => {
   };
 
   const handleCheckout = () => {
-    // Basic validation
-    if (!pickupOption || cart.items.length === 0) {
+    // Basic validation for separate pickup/contact details
+    if (
+      !pickupOption ||
+      cart.items.length === 0 ||
+      !customerName ||
+      phoneNumber.length !== 11 ||
+      !pickupDate ||
+      !pickupTime
+    ) {
       return;
     }
     
@@ -608,9 +615,9 @@ const Cart: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl">📞</span>
-                  <span><strong>Contact:</strong> {orderDetails.phoneNumber}</span>
+                  <span><strong>Contact:</strong> (number)</span>
                 </div>
-                {pickupOption === 'rider' && (
+                {orderDetails.pickupOption === 'rider' && (
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl">🛵</span>
                     <span>You may now book via your Shipping provider (ex: Lalamove, Grab Express)</span>
