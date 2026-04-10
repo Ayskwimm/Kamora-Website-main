@@ -230,8 +230,8 @@ const Cart: React.FC = () => {
     return (
       <>
         {/* Order Receipt Modal */}
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div id="receipt-modal-content" className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex min-h-screen items-center justify-center z-50 p-4 pt-20">
+          <div id="receipt-modal-content" className="bg-white rounded-2xl max-w-2xl w-full max-h-[calc(100vh-8rem)] overflow-y-auto shadow-2xl">
             {/* Receipt Header */}
             <div className="bg-gradient-to-r from-kamora-orange to-kamora-red text-white p-6 rounded-t-2xl">
               <div className="flex justify-between items-start">
@@ -372,41 +372,45 @@ const Cart: React.FC = () => {
       {/* Cart Items */}
       <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
         {cart.items.map((item) => (
-          <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+          <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border rounded-lg">
             <img
               src={item.image}
               alt={item.name}
               className="w-16 h-16 object-cover rounded"
             />
-            <div className="flex-1">
-              <h4 className="font-semibold text-kamora-dark">{item.name}</h4>
+            <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-kamora-dark truncate">{item.name}</h4>
               <p className="text-kamora-orange font-bold">${item.price.toFixed(2)}</p>
             </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-              >
-                -
-              </button>
-              <span className="w-8 text-center font-semibold">{item.quantity}</span>
-              <button
-                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-              >
-                +
-              </button>
-            </div>
-            <div className="text-right">
-              <p className="font-bold text-kamora-dark">
-                ${(item.price * item.quantity).toFixed(2)}
-              </p>
-              <button
-                onClick={() => removeItem(item.id)}
-                className="text-red-500 hover:text-red-700 text-sm"
-              >
-                Remove
-              </button>
+            <div className="flex flex-col w-full sm:w-auto gap-3">
+              <div className="flex items-center justify-between sm:justify-end gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                  >
+                    -
+                  </button>
+                  <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-col items-start sm:items-end gap-1">
+                <p className="font-bold text-kamora-dark">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </p>
+                <button
+                  onClick={() => removeItem(item.id)}
+                  className="text-red-500 hover:text-red-700 text-sm"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -493,7 +497,7 @@ const Cart: React.FC = () => {
               }}
             />
             <p className="text-gray-500 text-sm mt-1">
-              Select a date within 1 week from today
+              Select a date within 1 week from today Sunday is not allowed for pickup
             </p>
           </div>
           
@@ -619,7 +623,6 @@ const Cart: React.FC = () => {
               <Button
                 onClick={() => {
                   setShowConfirmation(false);
-                  clearCart();
                 }}
                 variant="secondary"
                 className="flex-1"

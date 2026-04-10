@@ -54,10 +54,10 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => document.getElementById('partnership')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-gray-300 hover:text-kamora-orange transition-colors"
                 >
-                  Partnership
+                  Menu
                 </button>
               </li>
               <li>
