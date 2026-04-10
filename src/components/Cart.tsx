@@ -497,7 +497,7 @@ const Cart: React.FC = () => {
               }}
             />
             <p className="text-gray-500 text-sm mt-1">
-              Select a date within 1 week from today (Sunday is not allowed for pickup)
+              Select a date within 1 week from today (Sunday is not available)
             </p>
           </div>
           
