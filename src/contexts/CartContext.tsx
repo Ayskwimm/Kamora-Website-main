@@ -6,6 +6,8 @@ export interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  customization?: string;
+  extraPrice?: number;
 }
 
 interface CartState {
@@ -17,6 +19,7 @@ type CartAction =
   | { type: 'ADD_ITEM'; payload: Omit<CartItem, 'quantity'> }
   | { type: 'REMOVE_ITEM'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
+  | { type: 'UPDATE_ITEM'; payload: { id: string; customization?: string; extraPrice?: number } }
   | { type: 'CLEAR_CART' };
 
 const initialState: CartState = {
@@ -74,6 +77,23 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         total: calculateTotal(updatedItems),
       };
     }
+    case 'UPDATE_ITEM': {
+      const { id, customization, extraPrice } = action.payload;
+      const updatedItems = state.items.map(item =>
+        item.id === id
+          ? {
+              ...item,
+              customization: customization ?? item.customization,
+              extraPrice: extraPrice ?? item.extraPrice,
+            }
+          : item
+      );
+      return {
+        ...state,
+        items: updatedItems,
+        total: calculateTotal(updatedItems),
+      };
+    }
     case 'CLEAR_CART':
       return initialState;
     default:
@@ -82,7 +102,11 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 };
 
 const calculateTotal = (items: CartItem[]): number => {
-  return items.reduce((total, item) => total + item.price * item.quantity, 0);
+  return items.reduce((total, item) => {
+    const itemBase = item.price * item.quantity;
+    const itemExtra = (item.extraPrice ?? 0) * item.quantity;
+    return total + itemBase + itemExtra;
+  }, 0);
 };
 
 interface CartContextType {
@@ -90,6 +114,7 @@ interface CartContextType {
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  updateItem: (id: string, customization?: string, extraPrice?: number) => void;
   clearCart: () => void;
 }
 
@@ -110,6 +135,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
   };
 
+  const updateItem = (id: string, customization?: string, extraPrice?: number) => {
+    dispatch({ type: 'UPDATE_ITEM', payload: { id, customization, extraPrice } });
+  };
+
   const clearCart = () => {
     dispatch({ type: 'CLEAR_CART' });
   };
@@ -121,6 +150,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addItem,
         removeItem,
         updateQuantity,
+        updateItem,
         clearCart,
       }}
     >

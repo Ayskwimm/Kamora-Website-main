@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useCart } from '../contexts/CartContext';
+import React, { useEffect, useState } from 'react';
+import { useCart, CartItem } from '../contexts/CartContext';
 import Button from './Button';
 
 // Order interface for receipt
@@ -23,12 +23,16 @@ type OrderDetails = {
 };
 
 const Cart: React.FC = () => {
-  const { cart, removeItem, updateQuantity, clearCart } = useCart();
+  const { cart, removeItem, updateQuantity, updateItem, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState<'gcash'>('gcash');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
-  
+  const [customizingItem, setCustomizingItem] = useState<CartItem | null>(null);
+  const [customizationNote, setCustomizationNote] = useState('');
+  const [selectedOption, setSelectedOption] = useState('No extras');
+  const [customOptionPrice, setCustomOptionPrice] = useState(0);
+
   // New form fields
   const [pickupDate, setPickupDate] = useState('');
   const [pickupTime, setPickupTime] = useState('');
@@ -48,6 +52,69 @@ const Cart: React.FC = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const customizationOptions = [
+    { label: 'No extras', value: 'No extras', price: 0 },
+    { label: 'Extra gravy', value: 'Extra gravy', price: 15 },
+    { label: 'Extra cheese', value: 'Extra cheese', price: 25 },
+    { label: 'Spicy kick', value: 'Spicy kick', price: 20 },
+  ];
+
+  const openCustomizationModal = (item: CartItem) => {
+    const savedCustomization = item.customization ?? '';
+    const matchedOption = customizationOptions.find((option) =>
+      option.value !== 'No extras' && savedCustomization.startsWith(option.value)
+    );
+
+    setCustomizingItem(item);
+    if (matchedOption) {
+      setSelectedOption(matchedOption.value);
+      setCustomOptionPrice(matchedOption.price);
+      setCustomizationNote(savedCustomization.slice(matchedOption.value.length).replace(/^ · /, ''));
+    } else {
+      setSelectedOption('No extras');
+      setCustomOptionPrice(item.extraPrice ?? 0);
+      setCustomizationNote(savedCustomization);
+    }
+  };
+
+  const closeCustomizationModal = () => {
+    setCustomizingItem(null);
+    setCustomizationNote('');
+    setSelectedOption('No extras');
+    setCustomOptionPrice(0);
+  };
+
+  const handleSaveCustomization = () => {
+    if (!customizingItem) {
+      return;
+    }
+
+    const customizationText = selectedOption === 'No extras'
+      ? customizationNote
+      : `${selectedOption}${customizationNote ? ` · ${customizationNote}` : ''}`;
+
+    updateItem(customizingItem.id, customizationText, customOptionPrice);
+    closeCustomizationModal();
+  };
+
+  useEffect(() => {
+    const body = document.body;
+    if (customizingItem || showReceipt || showConfirmation) {
+      body.style.overflow = 'hidden';
+    } else {
+      body.style.overflow = '';
+    }
+
+    return () => {
+      body.style.overflow = '';
+    };
+  }, [customizingItem, showReceipt, showConfirmation]);
+
+  const handleOptionChange = (optionValue: string, price: number) => {
+    setSelectedOption(optionValue);
+    setCustomOptionPrice(price);
   };
 
   const handleCheckout = () => {
@@ -233,6 +300,86 @@ const Cart: React.FC = () => {
   };
 
   // Show receipt modal even if cart is empty (after checkout)
+  if (customizingItem) {
+    return (
+      <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl">
+          <div className="flex items-center justify-between p-5 border-b">
+            <div>
+              <h3 className="text-xl font-bold text-kamora-dark">Customize Your Meal</h3>
+              <p className="text-sm text-gray-500">Edit your selected meal before checkout.</p>
+            </div>
+            <button
+              onClick={closeCustomizationModal}
+              className="text-gray-500 hover:text-gray-700"
+              aria-label="Close customization modal"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="p-6 space-y-5">
+            <div>
+              <p className="text-sm font-semibold text-gray-700">Item</p>
+              <p className="text-lg font-bold text-kamora-dark">{customizingItem.name}</p>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-gray-700">Choose an option</p>
+              <div className="grid grid-cols-2 gap-3">
+                {customizationOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => handleOptionChange(option.value, option.price)}
+                    className={`rounded-2xl border px-4 py-3 text-left transition ${
+                      selectedOption === option.value
+                        ? 'border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
+                        : 'border-gray-200 bg-white text-gray-700 hover:border-kamora-orange'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span>{option.label}</span>
+                      {option.price > 0 && <span className="text-sm text-kamora-orange">+₱{option.price}</span>}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-kamora-cream rounded-3xl p-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Special instructions</label>
+              <textarea
+                value={customizationNote}
+                onChange={(e) => setCustomizationNote(e.target.value)}
+                rows={4}
+                placeholder="Add requests like less salt, extra sauce, or no onions"
+                className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kamora-orange"
+              />
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Customization fee</p>
+                <p className="text-lg font-bold text-kamora-orange">+₱{customOptionPrice.toFixed(2)}</p>
+              </div>
+              <div className="flex gap-3 flex-wrap">
+                <Button onClick={closeCustomizationModal} variant="secondary" className="px-5 py-3">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveCustomization} variant="primary" className="px-5 py-3">
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (showReceipt && orderDetails) {
     return (
       <>
@@ -364,9 +511,9 @@ const Cart: React.FC = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold text-kamora-dark">Your Cart</h3>
+    <div className="bg-white rounded-3xl shadow-lg p-4 overflow-hidden max-h-full min-h-0">
+      <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center mb-5">
+        <h3 className="text-lg md:text-xl font-bold text-kamora-dark">Your Cart</h3>
         <Button
           onClick={clearCart}
           variant="secondary"
@@ -376,225 +523,220 @@ const Cart: React.FC = () => {
         </Button>
       </div>
 
-      {/* Cart Items */}
-      <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
-        {cart.items.map((item) => (
-          <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border rounded-lg">
-            <img
-              src={item.image}
-              alt={item.name}
-              className="w-16 h-16 object-cover rounded"
-            />
-            <div className="flex-1 min-w-0">
-              <h4 className="font-semibold text-kamora-dark truncate">{item.name}</h4>
-              <p className="text-kamora-orange font-bold">${item.price.toFixed(2)}</p>
-            </div>
-            <div className="flex flex-col w-full sm:w-auto gap-3">
-              <div className="flex items-center justify-between sm:justify-end gap-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-                  >
-                    -
-                  </button>
-                  <span className="w-8 text-center font-semibold">{item.quantity}</span>
-                  <button
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-              <div className="flex flex-col items-start sm:items-end gap-1">
-                <p className="font-bold text-kamora-dark">
-                  ${(item.price * item.quantity).toFixed(2)}
-                </p>
-                <button
-                  onClick={() => removeItem(item.id)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Checkout Section */}
-      <div className="border-t pt-4">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-lg font-semibold text-kamora-dark">Total:</span>
-          <span className="text-2xl font-bold text-kamora-orange">
-            ${cart.total.toFixed(2)}
-          </span>
-        </div>
-
-        {/* Customer Information */}
-        <div className="space-y-4 mb-4">
-          {/* Name Input */}
-          <div className="bg-kamora-cream rounded-lg p-4">
-            <label className="block text-sm font-medium text-kamora-dark mb-2">
-              Full Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={customerName}
-              onChange={(e) => {
-                const value = e.target.value;
-                // Only allow letters and spaces
-                const lettersOnly = value.replace(/[^a-zA-Z\s]/g, '');
-                setCustomerName(lettersOnly);
-              }}
-              placeholder="Enter your full name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
-              required
-            />
-            {customerName && /[^a-zA-Z\s]/.test(customerName) && (
-              <p className="text-red-500 text-sm mt-1">Only letters and spaces are allowed</p>
-            )}
-          </div>
-          
-          {/* Phone Number Input */}
-          <div className="bg-kamora-cream rounded-lg p-4">
-            <label className="block text-sm font-medium text-kamora-dark mb-2">
-              Phone Number <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="tel"
-              value={phoneNumber}
-              onChange={(e) => {
-                const value = e.target.value;
-                // Only allow numbers, limit to 11 digits
-                const numbersOnly = value.replace(/\D/g, '').slice(0, 11);
-                setPhoneNumber(numbersOnly);
-              }}
-              placeholder="Enter 11-digit phone number"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
-              maxLength={11}
-              required
-            />
-            {phoneNumber.length > 0 && phoneNumber.length < 11 && (
-              <p className="text-red-500 text-sm mt-1">Phone number must be exactly 11 digits</p>
-            )}
-          </div>
-          
-          {/* Date Pickup Input */}
-          <div className="bg-kamora-cream rounded-lg p-4">
-            <label className="block text-sm font-medium text-kamora-dark mb-2">
-              Pickup Date <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              value={pickupDate}
-              onChange={(e) => {
-                const selectedDate = e.target.value;
-                if (validatePickupDate(selectedDate)) {
-                  setPickupDate(selectedDate);
-                }
-              }}
-              min={new Date().toISOString().split('T')[0]}
-              max={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
-              required
-              style={{
-                colorScheme: 'light'
-              }}
-            />
-            <p className="text-gray-500 text-sm mt-1">
-              Select a date within 1 week from today (Sunday is not available)
-            </p>
-          </div>
-          
-          {/* Pickup Time Input */}
-          <div className="bg-kamora-cream rounded-lg p-4">
-            <label className="block text-sm font-medium text-kamora-dark mb-2">
-              Pickup Time <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={pickupTime}
-              onChange={(e) => setPickupTime(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
-              required
-            >
-              <option value="">Select a time slot</option>
-              {generateTimeSlots().map((slot) => (
-                <option key={slot.value} value={slot.value}>
-                  {slot.display}
-                </option>
-              ))}
-            </select>
-            <p className="text-gray-500 text-sm mt-1">
-              Select a 1-hour time slot between 8:00 AM and 8:00 PM
-            </p>
-          </div>
-        </div>
-        
-        {/* Payment Method Selection */}
-        <div className="bg-kamora-cream rounded-lg p-4 mb-4">
-          <h4 className="font-semibold text-kamora-dark mb-3">Payment Method</h4>
-          <div className="space-y-2">
-            <label className="flex items-center space-x-3 cursor-pointer">
-              <input
-                type="radio"
-                name="payment"
-                value="gcash"
-                checked={paymentMethod === 'gcash'}
-                onChange={() => setPaymentMethod('gcash')}
-                className="w-4 h-4 text-kamora-orange"
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-[1.8fr_1fr] h-full overflow-hidden min-h-0">
+        <div className="space-y-4 pr-2 min-h-0 lg:overflow-y-auto lg:max-h-[calc(100vh-14rem)]">
+          {cart.items.map((item) => (
+            <div key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border rounded-lg">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-16 h-16 object-cover rounded"
               />
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">GC</span>
-                </div>
-                <span className="text-sm font-medium">GCash</span>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-kamora-dark break-words whitespace-normal">{item.name}</h4>
+                <p className="text-kamora-orange font-bold">${item.price.toFixed(2)}</p>
+                {item.customization && (
+                  <p className="text-sm text-gray-500 mt-1">Customization: {item.customization}</p>
+                )}
+                {item.extraPrice ? (
+                  <p className="text-sm text-gray-500 mt-1">Customization fee: +₱{item.extraPrice.toFixed(2)} each</p>
+                ) : (
+                  <p className="text-sm text-gray-500 mt-1">No extra custom fees</p>
+                )}
               </div>
-            </label>
-          </div>
+              <div className="flex flex-col w-full sm:w-auto gap-3">
+                <div className="flex items-center justify-between sm:justify-end gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                    >
+                      -
+                    </button>
+                    <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start sm:items-end gap-2">
+                  <p className="font-bold text-kamora-dark">
+                    ${(item.price * item.quantity + (item.extraPrice ?? 0) * item.quantity).toFixed(2)}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => openCustomizationModal(item)}
+                      className="text-kamora-orange hover:text-kamora-red text-sm font-semibold"
+                    >
+                      Customize Your Meal
+                    </button>
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="text-red-500 hover:text-red-700 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
-
-        {/* Pickup Option Selection */}
-        {pickupDate && customerName && phoneNumber.length === 11 && pickupTime && (
-          <div className="bg-kamora-cream rounded-lg p-4 mb-4">
-            <h4 className="font-semibold text-kamora-dark mb-3">Choose Pickup Option</h4>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setPickupOption('store')}
-                className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
-                  pickupOption === 'store'
-                    ? 'bg-kamora-orange text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                🏪 Pick-up at Store
-              </button>
-              <button
-                onClick={() => setPickupOption('rider')}
-                className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
-                  pickupOption === 'rider'
-                    ? 'bg-kamora-orange text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                🛵 Book Your Rider
-              </button>
+        <div className="flex flex-col gap-3 rounded-3xl border border-gray-200 bg-kamora-cream p-3 pb-4 min-h-0 lg:overflow-y-auto lg:max-h-[calc(100vh-14rem)]">
+          <div className="mb-3">
+            <div className="flex flex-col gap-1">
+              <span className="text-base font-semibold text-kamora-dark">Total</span>
+              <span className="text-xl font-bold text-kamora-orange">${cart.total.toFixed(2)}</span>
             </div>
+            <p className="text-xs text-gray-600 mt-2">Review your order details and proceed to checkout when you're ready.</p>
           </div>
-        )}
-        
-        <Button
-          onClick={handleCheckout}
-          variant="primary"
-          disabled={cart.items.length === 0 || !pickupOption}
-          className="w-full"
-        >
-          Checkout
-        </Button>
+
+          <div className="space-y-2">
+            <div className="bg-white rounded-2xl p-3">
+              <label className="block text-sm font-medium text-kamora-dark mb-2">
+                Full Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={customerName}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const lettersOnly = value.replace(/[^a-zA-Z\s]/g, '');
+                  setCustomerName(lettersOnly);
+                }}
+                placeholder="Enter your full name"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
+              />
+              {customerName && /[^a-zA-Z\s]/.test(customerName) && (
+                <p className="text-red-500 text-xs mt-1">Only letters and spaces are allowed</p>
+              )}
+            </div>
+
+            <div className="bg-white rounded-2xl p-3">
+              <label className="block text-sm font-medium text-kamora-dark mb-2">
+                Phone Number <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numbersOnly = value.replace(/\D/g, '').slice(0, 11);
+                  setPhoneNumber(numbersOnly);
+                }}
+                placeholder="Enter 11-digit phone number"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
+                maxLength={11}
+              />
+              {phoneNumber.length > 0 && phoneNumber.length < 11 && (
+                <p className="text-red-500 text-xs mt-1">Phone number must be exactly 11 digits</p>
+              )}
+            </div>
+
+            <div className="bg-white rounded-2xl p-3">
+              <label className="block text-sm font-medium text-kamora-dark mb-2">
+                Pickup Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                value={pickupDate}
+                onChange={(e) => {
+                  const selectedDate = e.target.value;
+                  if (validatePickupDate(selectedDate)) {
+                    setPickupDate(selectedDate);
+                  }
+                }}
+                min={new Date().toISOString().split('T')[0]}
+                max={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
+                style={{ colorScheme: 'light' }}
+              />
+              <p className="text-gray-500 text-xs mt-1">Select a date within 1 week from today (Sunday is not available)</p>
+            </div>
+
+            <div className="bg-white rounded-2xl p-3">
+              <label className="block text-sm font-medium text-kamora-dark mb-2">
+                Pickup Time <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={pickupTime}
+                onChange={(e) => setPickupTime(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-kamora-orange"
+              >
+                <option value="">Select a time slot</option>
+                {generateTimeSlots().map((slot) => (
+                  <option key={slot.value} value={slot.value}>
+                    {slot.display}
+                  </option>
+                ))}
+              </select>
+              <p className="text-gray-500 text-sm mt-1">Select a 1-hour time slot between 8:00 AM and 8:00 PM</p>
+            </div>
+
+            <div className="bg-white rounded-2xl p-3">
+              <h4 className="font-semibold text-kamora-dark mb-3">Payment Method</h4>
+              <label className="flex items-center space-x-3 cursor-pointer">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="gcash"
+                  checked={paymentMethod === 'gcash'}
+                  onChange={() => setPaymentMethod('gcash')}
+                  className="w-4 h-4 text-kamora-orange"
+                />
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+                    <span className="text-white font-bold text-xs">GC</span>
+                  </div>
+                  <span className="text-sm font-medium">GCash</span>
+                </div>
+              </label>
+            </div>
+
+            {pickupDate && customerName && phoneNumber.length === 11 && pickupTime && (
+              <div className="bg-white rounded-2xl p-3">
+                <h4 className="font-semibold text-kamora-dark mb-3">Choose Pickup Option</h4>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <button
+                    onClick={() => setPickupOption('store')}
+                    className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+                      pickupOption === 'store'
+                        ? 'bg-kamora-orange text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    🏪 Pick-up at Store
+                  </button>
+                  <button
+                    onClick={() => setPickupOption('rider')}
+                    className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+                      pickupOption === 'rider'
+                        ? 'bg-kamora-orange text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    🛵 Book Your Rider
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Button
+            onClick={handleCheckout}
+            variant="primary"
+            disabled={cart.items.length === 0 || !pickupOption}
+            className="w-full"
+          >
+            Checkout
+          </Button>
+        </div>
       </div>
-      
+
       {/* Order Confirmation Modal */}
       {showConfirmation && orderDetails && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -611,7 +753,7 @@ const Cart: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl">📍</span>
-                  <span><strong>Address:</strong> 4031 Gen T. De Leon</span>
+                  <span><strong>Address:</strong> 4031 Gen T. De Leon, Valenzuela City, Philippines</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl">📞</span>

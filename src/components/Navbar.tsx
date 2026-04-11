@@ -23,8 +23,8 @@ const Navbar: React.FC = () => {
 
   const navItems = [
     { id: 'home', label: 'Home' },
-    { id: 'about', label: 'About' },
     { id: 'menu', label: 'Menu' },
+    { id: 'about', label: 'About' },
     { id: 'contact', label: 'Contact' },
   ];
 
