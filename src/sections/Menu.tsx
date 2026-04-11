@@ -125,14 +125,14 @@ const Menu: React.FC = () => {
           </p>
         </div>
 
-        <div className="mb-8 overflow-x-auto">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/70 p-1 shadow-sm">
+        <div className="mb-8 px-4 sm:px-0">
+          <div className="flex flex-wrap justify-center gap-2 rounded-full bg-white/90 p-1 shadow-sm">
             {categories.map((category) => (
               <button
                 key={category.key}
                 type="button"
                 onClick={() => setSelectedCategory(category.key)}
-                className={`rounded-full px-5 py-3 text-sm font-semibold transition ${
+                className={`rounded-full px-4 py-3 text-sm font-semibold text-center transition min-w-[5rem] ${
                   selectedCategory === category.key
                     ? 'bg-kamora-orange text-white shadow-lg'
                     : 'text-kamora-dark hover:bg-gray-100'
@@ -192,7 +192,7 @@ const Menu: React.FC = () => {
               <button
                 type="button"
                 onClick={closeCustomization}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-red-500 hover:text-red-700"
                 aria-label="Close customization"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,12 +232,14 @@ const Menu: React.FC = () => {
                 </div>
 
                 <div className="bg-kamora-cream rounded-3xl p-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Special instructions</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Special instructions <span className="text-gray-500">(optional)</span>
+                  </label>
                   <textarea
                     value={customizationNote}
                     onChange={(e) => setCustomizationNote(e.target.value)}
                     rows={4}
-                    placeholder="Add requests like less salt, extra sauce, or no onions"
+                    placeholder="Optional: Add requests like less salt, extra sauce, or no onions"
                     className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kamora-orange"
                   />
                 </div>
@@ -249,7 +251,11 @@ const Menu: React.FC = () => {
                   <p className="text-lg font-bold text-kamora-orange">+₱{customOptionPrice.toFixed(2)}</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  <Button onClick={closeCustomization} variant="secondary" className="px-5 py-3">
+                  <Button
+                    onClick={closeCustomization}
+                    variant="secondary"
+                    className="px-5 py-3 !bg-red-500 !text-white !border-red-500 hover:!bg-red-600 hover:!border-red-600"
+                  >
                     Cancel
                   </Button>
                   <Button onClick={handleAddToCart} variant="primary" className="px-5 py-3">

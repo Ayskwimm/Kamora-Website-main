@@ -28,7 +28,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, 
           <div className="flex gap-4">
             <button
               onClick={onClose}
-              className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex-1 px-6 py-3 bg-red-500 text-white border border-red-500 rounded-lg hover:bg-red-600 transition-colors"
             >
               Close
             </button>

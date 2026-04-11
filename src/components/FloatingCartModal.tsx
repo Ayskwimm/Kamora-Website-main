@@ -32,7 +32,7 @@ const FloatingCartModal: React.FC = () => {
           <button
             type="button"
             onClick={closeCart}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white text-kamora-dark shadow-lg transition hover:bg-gray-100"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition hover:bg-red-600"
             aria-label="Close cart"
           >
             <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

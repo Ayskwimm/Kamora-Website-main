@@ -311,7 +311,7 @@ const Cart: React.FC = () => {
             </div>
             <button
               onClick={closeCustomizationModal}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-red-500 hover:text-red-700"
               aria-label="Close customization modal"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -350,12 +350,14 @@ const Cart: React.FC = () => {
             </div>
 
             <div className="bg-kamora-cream rounded-3xl p-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Special instructions</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Special instructions <span className="text-gray-500">(optional)</span>
+              </label>
               <textarea
                 value={customizationNote}
                 onChange={(e) => setCustomizationNote(e.target.value)}
                 rows={4}
-                placeholder="Add requests like less salt, extra sauce, or no onions"
+                placeholder="Optional: Add requests like less salt, extra sauce, or no onions"
                 className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kamora-orange"
               />
             </div>
@@ -366,7 +368,11 @@ const Cart: React.FC = () => {
                 <p className="text-lg font-bold text-kamora-orange">+₱{customOptionPrice.toFixed(2)}</p>
               </div>
               <div className="flex gap-3 flex-wrap">
-                <Button onClick={closeCustomizationModal} variant="secondary" className="px-5 py-3">
+                <Button
+                  onClick={closeCustomizationModal}
+                  variant="secondary"
+                  className="px-5 py-3 !bg-red-500 !text-white !border-red-500 hover:!bg-red-600 hover:!border-red-600"
+                >
                   Cancel
                 </Button>
                 <Button onClick={handleSaveCustomization} variant="primary" className="px-5 py-3">
@@ -517,7 +523,7 @@ const Cart: React.FC = () => {
         <Button
           onClick={clearCart}
           variant="secondary"
-          className="text-sm py-2 px-4"
+          className="text-sm py-2 px-4 bg-red-500 hover:bg-red-600 text-white border-red-500 hover:border-red-600"
         >
           Clear Cart
         </Button>
@@ -774,7 +780,7 @@ const Cart: React.FC = () => {
                   setShowConfirmation(false);
                 }}
                 variant="secondary"
-                className="flex-1"
+                className="flex-1 !bg-red-500 !text-white !border-red-500 hover:!bg-red-600 hover:!border-red-600"
               >
                 Close
               </Button>
