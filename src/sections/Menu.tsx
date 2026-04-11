@@ -179,9 +179,9 @@ const Menu: React.FC = () => {
       </div>
 
       {customizingItem && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm p-4 flex items-center justify-center" onClick={closeCustomization}>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm p-4 flex items-start justify-center overflow-y-auto pt-6" onClick={closeCustomization}>
           <div
-            className="relative w-full max-w-2xl rounded-[32px] bg-white shadow-2xl overflow-hidden"
+            className="relative w-full max-w-2xl rounded-[32px] bg-white shadow-2xl overflow-hidden max-h-[calc(100vh-4rem)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between p-6 border-b">
@@ -201,7 +201,7 @@ const Menu: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(100vh-16rem)]">
               <div>
                 <p className="text-sm font-semibold text-gray-700">Item</p>
                 <p className="text-xl font-bold text-kamora-dark">{customizingItem.name}</p>
