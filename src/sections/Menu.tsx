@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../contexts/CartContext';
 import Button from '../components/Button';
+import CategorySelector from '../components/CategorySelector';
 
 type CategoryKey = 'meal' | 'burger' | 'snacks' | 'soup' | 'drinks';
 
@@ -13,12 +14,12 @@ interface MenuItem {
   image: string;
 }
 
-const categories: { key: CategoryKey; label: string }[] = [
-  { key: 'meal', label: 'Meal' },
-  { key: 'burger', label: 'Burger' },
-  { key: 'snacks', label: 'Snacks' },
-  { key: 'soup', label: 'Soup' },
-  { key: 'drinks', label: 'Drinks' },
+const categories: { key: CategoryKey; label: string; icon: string; color: string; description: string }[] = [
+  { key: 'meal', label: 'Meal', icon: '🍽️', color: 'from-orange-50 to-red-50', description: 'Delicious hot meals served fresh' },
+  { key: 'burger', label: 'Burger', icon: '🍔', color: 'from-red-50 to-orange-50', description: 'Juicy burgers with premium toppings' },
+  { key: 'snacks', label: 'Snacks', icon: '🍟', color: 'from-yellow-50 to-orange-50', description: 'Crispy and tasty snack options' },
+  { key: 'soup', label: 'Soup', icon: '🍲', color: 'from-green-50 to-yellow-50', description: 'Warm soups made with love' },
+  { key: 'drinks', label: 'Drinks', icon: '🥤', color: 'from-blue-50 to-purple-50', description: 'Refreshing beverages to complete your meal' },
 ];
 
 const categoryLabels: Record<CategoryKey, string> = {
@@ -125,43 +126,34 @@ const Menu: React.FC = () => {
           </p>
         </div>
 
-        <div className="mb-8 px-4 sm:px-0">
-          <div className="flex flex-wrap justify-center gap-2 rounded-full bg-white/90 p-1 shadow-sm">
-            {categories.map((category) => (
-              <button
-                key={category.key}
-                type="button"
-                onClick={() => setSelectedCategory(category.key)}
-                className={`rounded-full px-4 py-3 text-sm font-semibold text-center transition min-w-[5rem] ${
-                  selectedCategory === category.key
-                    ? 'bg-kamora-orange text-white shadow-lg'
-                    : 'text-kamora-dark hover:bg-gray-100'
-                }`}
-              >
-                {category.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <CategorySelector
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
 
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {filteredItems.map((item) => (
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 category-fade">
+          {filteredItems.map((item, index) => (
             <div
               key={item.id}
-              className="bg-white border border-gray-200 rounded-[28px] overflow-hidden shadow-sm flex flex-col h-full transition-transform duration-300 hover:-translate-y-1"
+              style={{
+                animation: `slideInUp 0.5s ease-out ${index * 0.1}s both`,
+              }}
+              className="bg-white border border-gray-200 rounded-[28px] overflow-hidden shadow-sm flex flex-col h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-kamora-orange/50 group"
             >
-              <div className="h-44 overflow-hidden">
+              <div className="h-44 overflow-hidden relative">
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               <div className="p-5 flex flex-col flex-1">
-                <span className="inline-flex items-center justify-center rounded-full bg-kamora-cream px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-kamora-dark mb-4">
+                <span className="inline-flex items-center justify-center rounded-full bg-kamora-cream px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-kamora-dark mb-4 group-hover:bg-kamora-orange group-hover:text-white transition-colors duration-300">
                   {categoryLabels[item.category]}
                 </span>
-                <h3 className="text-xl font-bold text-kamora-dark mb-2">{item.name}</h3>
+                <h3 className="text-xl font-bold text-kamora-dark mb-2 group-hover:text-kamora-orange transition-colors duration-300">{item.name}</h3>
                 <p className="text-lg font-semibold text-kamora-orange mb-6">{item.priceLabel}</p>
                 <div className="mt-auto">
                   <Button

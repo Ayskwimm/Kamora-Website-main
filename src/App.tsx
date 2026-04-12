@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { CartProvider } from './contexts/CartContext';
 import { CartUiProvider } from './contexts/CartUiContext';
 import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Home from './sections/Home';
+import EnhancedHero from './components/EnhancedHero';
+import QuickLinks from './components/QuickLinks';
 import Menu from './sections/Menu';
 import About from './sections/About';
 import Contact from './sections/Contact';
@@ -20,10 +20,10 @@ const App: React.FC = () => {
   return (
     <CartProvider>
       <CartUiProvider>
-        <div className="min-h-screen">
+        <div className="min-h-screen pt-16">
           <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
-          {activeTab === 'home' && <Hero onNavigate={setActiveTab} />}
-          {activeTab === 'home' && <Home onNavigate={setActiveTab} />}
+          {activeTab === 'home' && <EnhancedHero onNavigate={setActiveTab} />}
+          {activeTab === 'home' && <QuickLinks />}
           {activeTab === 'menu' && <Menu />}
           {activeTab === 'about' && <About />}
           {activeTab === 'contact' && <Contact />}
