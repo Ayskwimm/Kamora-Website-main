@@ -1,14 +1,13 @@
 import React from 'react';
 import Button from '../components/Button';
 
-const Home: React.FC = () => {
-  const scrollToMenu = () => {
-    const element = document.getElementById('menu');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+type TabKey = 'home' | 'menu' | 'about' | 'contact';
 
+interface HomeProps {
+  onNavigate: (tab: TabKey) => void;
+}
+
+const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   return (
     <section className="section-padding bg-white">
       <div className="max-w-7xl mx-auto">
@@ -45,7 +44,7 @@ const Home: React.FC = () => {
         {/* CTA to Menu */}
         <div className="text-center">
           <Button
-            onClick={scrollToMenu}
+            onClick={() => onNavigate('menu')}
             variant="primary"
             className="px-8 py-4 text-lg"
           >

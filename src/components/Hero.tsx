@@ -1,14 +1,13 @@
 import React from 'react';
 import Button from './Button';
 
-const Hero: React.FC = () => {
-  const scrollToAbout = () => {
-    const element = document.getElementById('about');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+type TabKey = 'home' | 'menu' | 'about' | 'contact';
 
+interface HeroProps {
+  onNavigate: (tab: TabKey) => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
   return (
     <section id="home" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-kamora-cream to-orange-50 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -32,7 +31,7 @@ const Hero: React.FC = () => {
               Each item is thoughtfully prepared and reasonably priced for your enjoyment
             </p>
           </div>
-          <Button onClick={scrollToAbout} variant="primary" className="text-lg px-8 py-4">
+          <Button onClick={() => onNavigate('about')} variant="primary" className="text-lg px-8 py-4">
             Learn More
           </Button>
         </div>

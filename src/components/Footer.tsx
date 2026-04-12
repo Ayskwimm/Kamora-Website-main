@@ -3,7 +3,13 @@ import facebookIcon from '../../assets/facebook.png';
 import instaIcon from '../../assets/insta.png';
 import tiktokIcon from '../../assets/tiktok.png';
 
-const Footer: React.FC = () => {
+type TabKey = 'home' | 'menu' | 'about' | 'contact';
+
+interface FooterProps {
+  onNavigate: (tab: TabKey) => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -35,7 +41,8 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               <li>
                 <button 
-                  onClick={() => document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' })}
+                  type="button"
+                  onClick={() => onNavigate('home')}
                   className="text-gray-300 hover:text-kamora-orange transition-colors"
                 >
                   Home
@@ -43,7 +50,8 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+                  type="button"
+                  onClick={() => onNavigate('about')}
                   className="text-gray-300 hover:text-kamora-orange transition-colors"
                 >
                   About
@@ -51,7 +59,8 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })}
+                  type="button"
+                  onClick={() => onNavigate('menu')}
                   className="text-gray-300 hover:text-kamora-orange transition-colors"
                 >
                   Menu
@@ -59,7 +68,8 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <button 
-                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                  type="button"
+                  onClick={() => onNavigate('contact')}
                   className="text-gray-300 hover:text-kamora-orange transition-colors"
                 >
                   Contact
@@ -76,7 +86,7 @@ const Footer: React.FC = () => {
                 <svg className="w-5 h-5 mr-2 text-kamora-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                info@kamora.com
+                goldensunfield@gmail.com
               </li>
               <li className="flex items-center">
                 <svg className="w-5 h-5 mr-2 text-kamora-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,9 +108,9 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Business Hours</h4>
             <ul className="space-y-2 text-gray-300">
-              <li>Monday - Friday: 11:00 AM - 10:00 PM</li>
-              <li>Saturday: 10:00 AM - 11:00 PM</li>
-              <li>Sunday: Closed </li>
+              <li>Monday - Saturday:</li>
+              <li> 8:00 AM - 8:00 PM</li>
+              
             </ul>
           </div>
         </div>

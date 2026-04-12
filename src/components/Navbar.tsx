@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const Navbar: React.FC = () => {
+type TabKey = 'home' | 'menu' | 'about' | 'contact';
+
+interface NavbarProps {
+  activeTab: TabKey;
+  onTabChange: (tab: TabKey) => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -13,20 +20,17 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMobileMenuOpen(false);
-    }
-  };
-
-  const navItems = [
+  const navItems: { id: TabKey; label: string }[] = [
     { id: 'home', label: 'Home' },
     { id: 'menu', label: 'Menu' },
     { id: 'about', label: 'About' },
     { id: 'contact', label: 'Contact' },
   ];
+
+  const handleNavClick = (tab: TabKey) => {
+    onTabChange(tab);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -36,12 +40,13 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <div 
+            <button
+              type="button"
               className="text-2xl font-bold text-kamora-orange cursor-pointer"
-              onClick={() => scrollToSection('home')}
+              onClick={() => handleNavClick('home')}
             >
               Kamora
-            </div>
+            </button>
           </div>
 
           {/* Desktop Navigation */}
@@ -50,8 +55,13 @@ const Navbar: React.FC = () => {
               {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className="text-kamora-dark hover:text-kamora-orange px-3 py-2 text-sm font-medium transition-colors duration-200"
+                  type="button"
+                  onClick={() => handleNavClick(item.id)}
+                  className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+                    activeTab === item.id
+                      ? 'text-kamora-orange border-b-2 border-kamora-orange'
+                      : 'text-kamora-dark hover:text-kamora-orange'
+                  }`}
                 >
                   {item.label}
                 </button>
@@ -91,8 +101,11 @@ const Navbar: React.FC = () => {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => scrollToSection(item.id)}
-              className="text-kamora-dark hover:text-kamora-orange block px-3 py-2 text-base font-medium w-full text-left transition-colors duration-200"
+              type="button"
+              onClick={() => handleNavClick(item.id)}
+              className={`block w-full text-left px-3 py-2 text-base font-medium transition-colors duration-200 ${
+                activeTab === item.id ? 'text-kamora-orange' : 'text-kamora-dark hover:text-kamora-orange'
+              }`}
             >
               {item.label}
             </button>

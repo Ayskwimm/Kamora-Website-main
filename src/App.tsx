@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CartProvider } from './contexts/CartContext';
 import { CartUiProvider } from './contexts/CartUiContext';
 import Navbar from './components/Navbar';
@@ -12,18 +12,22 @@ import FloatingCartButton from './components/FloatingCartButton';
 import FloatingCartModal from './components/FloatingCartModal';
 import './styles/index.css';
 
+type TabKey = 'home' | 'menu' | 'about' | 'contact';
+
 const App: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabKey>('home');
+
   return (
     <CartProvider>
       <CartUiProvider>
         <div className="min-h-screen">
-          <Navbar />
-          <Hero />
-          <Home />
-          <Menu />
-          <About />
-          <Contact />
-          <Footer />
+          <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
+          {activeTab === 'home' && <Hero onNavigate={setActiveTab} />}
+          {activeTab === 'home' && <Home onNavigate={setActiveTab} />}
+          {activeTab === 'menu' && <Menu />}
+          {activeTab === 'about' && <About />}
+          {activeTab === 'contact' && <Contact />}
+          <Footer onNavigate={setActiveTab} />
           <FloatingCartButton />
           <FloatingCartModal />
         </div>
