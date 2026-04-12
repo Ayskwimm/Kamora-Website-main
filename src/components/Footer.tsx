@@ -108,7 +108,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Business Hours</h4>
             <ul className="space-y-2 text-gray-300">
-              <li>Monday - Saturday:</li>
+              <li>Monday to Saturday</li>
               <li> 8:00 AM - 8:00 PM</li>
               
             </ul>

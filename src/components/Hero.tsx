@@ -9,7 +9,7 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-kamora-cream to-orange-50 pt-16">
+    <section id="home" className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-kamora-cream to-orange-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-bold text-kamora-dark mb-6">

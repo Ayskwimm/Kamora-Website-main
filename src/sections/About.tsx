@@ -3,16 +3,16 @@ import MemberCard from '../components/MemberCard';
 
 const About: React.FC = () => {
   const members = [
-    { name: 'Sarah Johnson', role: 'Founder' },
-    { name: 'Michael Chen', role: 'Chef' },
-    { name: 'Emily Rodriguez', role: 'Operations Manager' },
-    { name: 'David Kim', role: 'Marketing Director' },
-    { name: 'Jessica Taylor', role: 'Head Chef' },
-    { name: 'Robert Anderson', role: 'Business Development' },
-    { name: 'Lisa Wang', role: 'Customer Experience' },
-    { name: 'James Wilson', role: 'Finance Manager' },
-    { name: 'Maria Garcia', role: 'Sous Chef' },
-    { name: 'Thomas Brown', role: 'Brand Consultant' },
+    { name: 'Kathleen Pearl Albutra', role: 'Partner' },
+    { name: 'Angela Jodi Aspa', role: 'Partner' },
+    { name: 'Marc Edison Canlas', role: 'Partner' },
+    { name: 'Angel Comedia', role: 'Partner' },
+    { name: 'Ervin Lemuel Daño', role: 'Partner' },
+    { name: 'Norlyn Diesta', role: 'Partner' },
+    { name: 'James Clarence Paule', role: 'Partner' },
+    { name: 'Ronalyn Ortega', role: 'Partner' },
+    { name: 'Chanmae Reynalda', role: 'Partner' },
+    { name: 'Renelyn Villanueva', role: 'Partner' },
   ];
 
   return (
@@ -29,11 +29,15 @@ const About: React.FC = () => {
               Founded with a passion for bringing people together through food, we've created a 
               unique concept that simplifies the dining experience while maximizing flavor and satisfaction.
             </p>
+             <div className="bg-white rounded-lg p-6 shadow-md mt-8">
+              <h3 className="text-2xl font-bold text-kamora-orange mb-4">Our Mission</h3>
+              <p className="text-gray-700"></p>
             <p>
-              Our mission is to provide consistently outstanding food that nourishes both body and soul. 
+              To provide consistently outstanding food that nourishes both body and soul. 
               We believe in the power of simplicity - focusing on perfect execution of a curated selection 
               rather than overwhelming our guests with endless choices.
             </p>
+       </div>
             <div className="bg-white rounded-lg p-6 shadow-md mt-8">
               <h3 className="text-2xl font-bold text-kamora-orange mb-4">Our Vision</h3>
               <p className="text-gray-700">
@@ -47,10 +51,10 @@ const About: React.FC = () => {
         {/* Members Section */}
         <div className="mt-16">
           <h3 className="text-3xl md:text-4xl font-bold text-kamora-dark text-center mb-12">
-            Our Members
+            THE PARTNERS 
           </h3>
-          <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-            Meet the passionate team behind Kamora's success
+          <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto py-1 px-6">
+            Meet the passionate partners behind Kamora 
           </p>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
