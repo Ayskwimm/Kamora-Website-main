@@ -21,14 +21,6 @@ const categories: { key: CategoryKey; label: string; icon: string; color: string
   { key: 'drinks', label: 'Drinks', icon: '🥤', color: 'from-blue-50 to-purple-50', description: 'Refreshing beverages to complete your meal' },
 ];
 
-const categoryLabels: Record<CategoryKey, string> = {
-  meal: 'Meal',
-  burger: 'Burger',
-  snacks: 'Snacks',
-  soup: 'Soup',
-  drinks: 'Drinks',
-};
-
 const customizationOptions = [
   { label: 'No extras', value: 'No extras', price: 0 },
   { label: 'Extra gravy', value: 'Extra gravy', price: 15 },
