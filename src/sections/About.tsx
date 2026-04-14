@@ -20,7 +20,7 @@ const About: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* About Content */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-kamora-dark mb-6">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-kamora-dark mb-6">
             About Kamora
           </h2>
           <div className="max-w-4xl mx-auto text-lg text-gray-700 space-y-4">
@@ -30,7 +30,7 @@ const About: React.FC = () => {
               unique concept that simplifies the dining experience while maximizing flavor and satisfaction.
             </p>
              <div className="bg-white rounded-lg p-6 shadow-md mt-8">
-              <h3 className="text-2xl font-bold text-kamora-orange mb-4">Our Mission</h3>
+              <h3 className="text-2xl font-heading font-bold text-kamora-orange mb-4">Our Mission</h3>
               <p className="text-gray-700"></p>
             <p>
               To provide consistently outstanding food that nourishes both body and soul. 
@@ -39,7 +39,7 @@ const About: React.FC = () => {
             </p>
        </div>
             <div className="bg-white rounded-lg p-6 shadow-md mt-8">
-              <h3 className="text-2xl font-bold text-kamora-orange mb-4">Our Vision</h3>
+              <h3 className="text-2xl font-heading font-bold text-kamora-orange mb-4">Our Vision</h3>
               <p className="text-gray-700">
                 To become the most beloved dining destination in every community we serve, 
                 setting new standards for quality, service, and customer satisfaction in the food industry.
@@ -50,7 +50,7 @@ const About: React.FC = () => {
 
         {/* Members Section */}
         <div className="mt-16">
-          <h3 className="text-3xl md:text-4xl font-bold text-kamora-dark text-center mb-12">
+          <h3 className="text-3xl md:text-4xl font-heading font-bold text-kamora-dark text-center mb-12">
             THE PARTNERS 
           </h3>
           <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto py-1 px-6">

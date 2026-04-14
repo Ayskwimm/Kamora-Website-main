@@ -112,7 +112,7 @@ const Contact: React.FC = () => {
     <section id="contact" className="section-padding bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-kamora-dark mb-4">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-kamora-dark mb-4">
             Get in Touch
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">

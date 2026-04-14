@@ -13,8 +13,10 @@ export default {
         'kamora-brown': '#8B4513',
         'kamora-dark': '#2C1810',
       },
-      fontFamily: {
-        'sans': ['Inter', 'system-ui', 'sans-serif'],
+       fontFamily: {
+        'sans': ['Abraham', 'Inter', 'system-ui', 'sans-serif'],
+        'display': ['Abraham', 'Inter', 'system-ui', 'sans-serif'],
+        'heading': ['Abraham', 'Inter', 'system-ui', 'sans-serif'],
       },
     },
   },

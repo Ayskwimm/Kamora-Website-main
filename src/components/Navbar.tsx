@@ -64,7 +64,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, onTabChange }) => {
           <div className="flex-shrink-0">
             <button
               type="button"
-              className={`font-bold text-kamora-orange cursor-pointer transition-all duration-300 ${
+              className={`font-heading font-bold text-kamora-orange cursor-pointer transition-all duration-300 ${
                 isNavbarShrunken ? 'text-base' : 'text-2xl'
               }`}
               onClick={() => handleNavClick('home')}
