@@ -13,12 +13,15 @@ interface MenuItem {
   image: string;
 }
 
-const categories: { key: CategoryKey; label: string; icon: string; color: string; description: string }[] = [
-  { key: 'meal', label: 'Meal', icon: '🍽️', color: 'from-orange-50 to-red-50', description: 'Delicious hot meals served fresh' },
-  { key: 'burger', label: 'Burger', icon: '🍔', color: 'from-red-50 to-orange-50', description: 'Juicy burgers with premium toppings' },
-  { key: 'snacks', label: 'Snacks', icon: '🍟', color: 'from-yellow-50 to-orange-50', description: 'Crispy and tasty snack options' },
-  { key: 'soup', label: 'Soup', icon: '🍲', color: 'from-green-50 to-yellow-50', description: 'Warm soups made with love' },
-  { key: 'drinks', label: 'Drinks', icon: '🥤', color: 'from-blue-50 to-purple-50', description: 'Refreshing beverages to complete your meal' },
+const getPlaceholderImage = (category: string) =>
+  `https://via.placeholder.com/640x420/ffffff/cc1427?text=${encodeURIComponent(category)}`;
+
+const categories: { key: CategoryKey; label: string; icon: string; description: string; image: string }[] = [
+  { key: 'meal', label: 'Meals', icon: '🍽️', description: 'Fresh hot meals served with savory sides.', image: getPlaceholderImage('Meals') },
+  { key: 'burger', label: 'Burger', icon: '🍔', description: 'Juicy burgers with premium toppings.', image: getPlaceholderImage('Burger') },
+  { key: 'snacks', label: 'Snacks', icon: '🍟', description: 'Crispy snacks made for sharing.', image: getPlaceholderImage('Snacks') },
+  { key: 'soup', label: 'Soup', icon: '🍲', description: 'Warm soups made to comfort and delight.', image: getPlaceholderImage('Soup') },
+  { key: 'drinks', label: 'Drinks', icon: '🥤', description: 'Refreshing beverages to complete every meal.', image: getPlaceholderImage('Drinks') },
 ];
 
 const customizationOptions = [
@@ -28,16 +31,13 @@ const customizationOptions = [
   { label: 'Spicy kick', value: 'Spicy kick', price: 20 },
 ];
 
-const getPlaceholderImage = (category: string) =>
-  `https://via.placeholder.com/640x420?text=${encodeURIComponent(category)}`;
-
 const menuItems: MenuItem[] = [
-  { id: 'kamote-fillet-with-gravy', name: 'Kamote fillet with gravy', category: 'meal', price: 108, priceLabel: '$108.00', image: getPlaceholderImage('Meal') },
-  { id: 'spicy-jamote-fillet-with-gravy', name: 'Spicy Kamote fillet with gravy', category: 'meal', price: 112, priceLabel: '$112.00', image: getPlaceholderImage('Meal') },
-  { id: 'garlic-butter-kamote-fillet-with-gravy', name: 'Garlic butter kamote fillet with gravy', category: 'meal', price: 116, priceLabel: '$116.00', image: getPlaceholderImage('Meal') },
-  { id: 'bbq-kamote-fillet-with-gravy', name: 'BBQ Kamote fillet with gravy', category: 'meal', price: 120, priceLabel: '$120.00', image: getPlaceholderImage('Meal') },
-  { id: 'kamote-fillet-ala-king', name: 'Kamote fillet Ala king', category: 'meal', price: 130, priceLabel: '$130.00', image: getPlaceholderImage('Meal') },
-  { id: 'kamote-fillet-with-cheese', name: 'Kamote fillet with cheese', category: 'meal', price: 128, priceLabel: '$128.00', image: getPlaceholderImage('Meal') },
+  { id: 'kamote-fillet-with-gravy', name: 'Kamote fillet with gravy', category: 'meal', price: 108, priceLabel: '$108.00', image: getPlaceholderImage('Meals') },
+  { id: 'spicy-jamote-fillet-with-gravy', name: 'Spicy Kamote fillet with gravy', category: 'meal', price: 112, priceLabel: '$112.00', image: getPlaceholderImage('Meals') },
+  { id: 'garlic-butter-kamote-fillet-with-gravy', name: 'Garlic butter kamote fillet with gravy', category: 'meal', price: 116, priceLabel: '$116.00', image: getPlaceholderImage('Meals') },
+  { id: 'bbq-kamote-fillet-with-gravy', name: 'BBQ Kamote fillet with gravy', category: 'meal', price: 120, priceLabel: '$120.00', image: getPlaceholderImage('Meals') },
+  { id: 'kamote-fillet-ala-king', name: 'Kamote fillet Ala king', category: 'meal', price: 130, priceLabel: '$130.00', image: getPlaceholderImage('Meals') },
+  { id: 'kamote-fillet-with-cheese', name: 'Kamote fillet with cheese', category: 'meal', price: 128, priceLabel: '$128.00', image: getPlaceholderImage('Meals') },
   { id: 'kamora-burger-with-cheese', name: 'Kamora burger with cheese', category: 'burger', price: 105, priceLabel: '$105.00', image: getPlaceholderImage('Burger') },
   { id: 'kamora-burger-deluxe', name: 'Kamora burger deluxe', category: 'burger', price: 115, priceLabel: '$115.00', image: getPlaceholderImage('Burger') },
   { id: 'kamote-fillet-bites-original', name: 'Kamote fillet bites original', category: 'snacks', price: 102, priceLabel: '$102.00', image: getPlaceholderImage('Snacks') },
@@ -47,15 +47,18 @@ const menuItems: MenuItem[] = [
   { id: 'mushroom-soup', name: 'Mushroom soup', category: 'soup', price: 104, priceLabel: '$104.00', image: getPlaceholderImage('Soup') },
   { id: 'crab-and-corn-soup', name: 'Crab and corn soup', category: 'soup', price: 106, priceLabel: '$106.00', image: getPlaceholderImage('Soup') },
   { id: 'ice-tea', name: 'Ice tea', category: 'drinks', price: 52, priceLabel: '$52.00', image: getPlaceholderImage('Drinks') },
+  { id: 'red-ice-tea', name: 'Red ice tea', category: 'drinks', price: 55, priceLabel: '$52.00', image: getPlaceholderImage('Drinks') },
 ];
 
 const Menu: React.FC = () => {
   const { addItem } = useCart();
-  const [expandedCategories, setExpandedCategories] = useState<Set<CategoryKey>>(new Set(['meal']));
+  const [activeCategory, setActiveCategory] = useState<CategoryKey | null>(null);
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
   const [selectedOption, setSelectedOption] = useState('No extras');
   const [customOptionPrice, setCustomOptionPrice] = useState(0);
   const [customizationNote, setCustomizationNote] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = customizingItem ? 'hidden' : '';
@@ -64,18 +67,40 @@ const Menu: React.FC = () => {
     };
   }, [customizingItem]);
 
-  const toggleCategory = (categoryKey: CategoryKey) => {
-    const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(categoryKey)) {
-      newExpanded.delete(categoryKey);
-    } else {
-      newExpanded.add(categoryKey);
-    }
-    setExpandedCategories(newExpanded);
+  useEffect(() => {
+    if (!showNotification) return;
+    const timeout = window.setTimeout(() => setShowNotification(false), 2800);
+    return () => window.clearTimeout(timeout);
+  }, [showNotification]);
+
+  useEffect(() => {
+    const parseHash = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith('#category-')) {
+        const slug = hash.replace('#category-', '') as CategoryKey;
+        if (categories.some((category) => category.key === slug)) {
+          setActiveCategory(slug);
+          return;
+        }
+      }
+      setActiveCategory(null);
+    };
+
+    parseHash();
+    window.addEventListener('hashchange', parseHash);
+    return () => window.removeEventListener('hashchange', parseHash);
+  }, []);
+
+  const getCategoryItems = (categoryKey: CategoryKey) => menuItems.filter((item) => item.category === categoryKey);
+
+  const showCategoryView = (categoryKey: CategoryKey) => {
+    window.history.replaceState(null, '', `${window.location.pathname}#category-${categoryKey}`);
+    setActiveCategory(categoryKey);
   };
 
-  const getCategoryItems = (categoryKey: CategoryKey) => {
-    return menuItems.filter((item) => item.category === categoryKey);
+  const clearCategoryView = () => {
+    window.history.replaceState(null, '', window.location.pathname);
+    setActiveCategory(null);
   };
 
   const startCustomization = (item: MenuItem) => {
@@ -111,6 +136,8 @@ const Menu: React.FC = () => {
       extraPrice: customOptionPrice || undefined,
     });
 
+    setNotificationMessage(`${customizingItem.name} added to cart successfully.`);
+    setShowNotification(true);
     closeCustomization();
   };
 
@@ -119,118 +146,131 @@ const Menu: React.FC = () => {
     setCustomOptionPrice(price);
   };
 
+  const activeCategoryData = activeCategory ? categories.find((category) => category.key === activeCategory) : null;
+
   return (
     <section id="menu" className="section-padding bg-gray-50">
       <div className="max-w-7xl mx-auto">
+        {showNotification && (
+          <div className="fixed right-5 top-24 z-50 w-full max-w-sm rounded-[28px] border border-green-100 bg-white/95 p-4 shadow-2xl backdrop-blur-xl transition-all duration-300 opacity-0"
+            style={{ animation: 'slideInRight 0.35s ease-out forwards' }}
+          >
+            <div className="flex items-start gap-4">
+              <div className="mt-1 flex h-11 w-11 items-center justify-center rounded-2xl bg-green-50 text-green-700 text-xl">
+                ✓
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-kamora-dark">Added to cart</p>
+                <p className="mt-1 text-sm text-gray-600 break-words">{notificationMessage}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowNotification(false)}
+                className="text-gray-400 hover:text-kamora-orange"
+                aria-label="Dismiss notification"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-kamora-dark mb-3">Our Menu</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Click on any category to explore our delicious menu items.
+            Explore our categories with cards, then open a dedicated page for each collection of menu items.
           </p>
         </div>
 
-        {/* Expandable Category Cards */}
-        <div className="space-y-6">
-          {categories.map((category) => {
-            const isExpanded = expandedCategories.has(category.key);
-            const categoryItems = getCategoryItems(category.key);
-
-            return (
-              <div key={category.key} className="category-section">
-                {/* Category Card */}
+        {!activeCategory ? (
+          <div className="flex flex-wrap justify-center gap-6">
+            {categories.map((category, index) => {
+              const categoryItems = getCategoryItems(category.key);
+              return (
                 <div
-                  onClick={() => toggleCategory(category.key)}
-                  className="group cursor-pointer"
+                  key={category.key}
+                  className="group cursor-pointer w-full max-w-[380px] sm:w-[calc(50%-0.75rem)] xl:w-[calc(33.333%-1rem)] rounded-[32px] overflow-hidden border-2 border-transparent bg-white shadow-lg transition duration-300 hover:-translate-y-1 hover:border-kamora-orange/70 hover:shadow-2xl hover:ring-2 hover:ring-kamora-orange/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-kamora-orange/10 opacity-0"
+                  style={{ animation: `fadeInScale 0.55s ease-out forwards ${index * 0.08}s` }}
+                  onClick={() => showCategoryView(category.key)}
                 >
-                  <div
-                    className={`relative h-48 md:h-56 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 bg-gradient-to-r ${category.color}`}
-                  >
-                    {/* Background Image */}
-                    <div className="absolute inset-0 opacity-30 group-hover:opacity-40 transition-opacity duration-300" />
-
-                    {/* Content */}
-                    <div className="relative h-full flex flex-col justify-center px-8 md:px-12">
-                      <h3 className="text-3xl md:text-5xl font-heading font-black text-kamora-dark uppercase tracking-widest mb-2">
-                        {category.label}
-                      </h3>
-                      <p className="text-base md:text-lg text-kamora-dark font-medium max-w-2xl">
-                        {category.description}
-                      </p>
+                  <div className="relative h-56 overflow-hidden">
+                    <img
+                      src={category.image}
+                      alt={category.label}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                    <div className="absolute left-6 bottom-6 right-6">
+                      <p className="text-sm uppercase tracking-[0.4em] text-white/80 mb-2">{category.icon}</p>
+                      <h3 className="text-3xl font-heading font-bold text-white drop-shadow-lg">{category.label}</h3>
+                      <p className="mt-3 text-sm text-white/90 leading-relaxed">{category.description}</p>
                     </div>
+                  </div>
 
-                    {/* Icon on the right */}
-                    <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 text-6xl md:text-7xl opacity-30 group-hover:opacity-50 transition-opacity duration-300">
-                      {category.icon}
+                  <div className="p-6">
+                    <div className="mb-4 text-sm text-gray-500">
+                      {categoryItems.length} items · click card to view all.
                     </div>
-
-                    {/* Toggle icon button */}
-                    <div
-                      className={`absolute top-6 right-6 md:top-8 md:right-8 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center group-hover:bg-kamora-orange group-hover:text-white transition-all duration-300 shadow-lg transform ${
-                        isExpanded ? 'rotate-45' : ''
-                      }`}
+                    <Button
+                      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                        event.stopPropagation();
+                        showCategoryView(category.key);
+                      }}
+                      variant="primary"
+                      className="w-full"
                     >
-                      <span className="text-xl md:text-2xl font-bold">+</span>
-                    </div>
-
-                    {/* Item count badge */}
-                    <div className="absolute bottom-4 left-8 md:left-12 bg-kamora-orange text-white px-4 py-2 rounded-full font-semibold text-sm">
-                      {categoryItems.length} items
-                    </div>
+                      Explore {category.label}
+                    </Button>
                   </div>
                 </div>
-
-                {/* Expanded Items Grid */}
-                <div
-                  className={`transition-all duration-500 overflow-hidden ${
-                    isExpanded ? 'max-h-[2000px] opacity-100 mt-8' : 'max-h-0 opacity-0'
-                  }`}
-                >
-                  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {categoryItems.map((item, index) => (
-                      <div
-                        key={item.id}
-                        style={{
-                          animation: isExpanded
-                            ? `slideInUp 0.5s ease-out ${index * 0.1}s both`
-                            : 'none',
-                        }}
-                        className="flex flex-col items-center text-center cursor-pointer group/item"
-                        onClick={() => startCustomization(item)}
-                      >
-                        {/* Image Container */}
-                        <div className="relative w-full mb-6 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 h-64">
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover/item:scale-110"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-300" />
-                        </div>
-
-                        {/* Item Name */}
-                        <h3 className="text-lg md:text-xl font-heading font-bold text-kamora-dark mb-3 group-hover/item:text-kamora-orange transition-colors duration-300 min-h-14 flex items-center justify-center">
-                          {item.name}
-                        </h3>
-
-                        {/* Price and Order Button */}
-                        <div className="flex flex-col items-center gap-4 w-full mt-auto">
-                          <p className="text-xl font-heading font-bold text-kamora-orange">{item.priceLabel}</p>
-                          <Button
-                            onClick={() => startCustomization(item)}
-                            variant="primary"
-                            className="w-full px-4 py-2"
-                          >
-                            Add to Order
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="space-y-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-sm uppercase tracking-[0.4em] text-kamora-orange font-semibold">{activeCategoryData?.label}</p>
+                <h3 className="mt-4 text-4xl md:text-5xl font-heading font-bold text-kamora-dark">{activeCategoryData?.label}</h3>
+                <p className="mt-4 text-lg text-gray-600">{activeCategoryData?.description}</p>
               </div>
-            );
-          })}
-        </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button variant="secondary" onClick={clearCategoryView} className="px-5 py-3">
+                  Back to Categories
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-6">
+              {getCategoryItems(activeCategory).map((item, index) => (
+                <div
+                  key={item.id}
+                  className="group flex flex-col w-full max-w-[380px] sm:w-[calc(50%-0.75rem)] xl:w-[calc(33.333%-1rem)] overflow-hidden rounded-[32px] border-2 border-transparent bg-white shadow-lg transition duration-300 hover:-translate-y-1 hover:border-kamora-orange/70 hover:shadow-2xl hover:ring-2 hover:ring-kamora-orange/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-kamora-orange/10 opacity-0"
+                  style={{ animation: `slideInUp 0.55s ease-out forwards ${index * 0.06 + 0.1}s` }}
+                >
+                  <div className="relative h-52 overflow-hidden">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="flex flex-col flex-1 p-6">
+                    <div className="mb-4">
+                      <h4 className="text-xl font-heading font-bold text-kamora-dark">{item.name}</h4>
+                      <p className="mt-2 text-sm text-gray-500">A delicious option from our {activeCategoryData?.label.toLowerCase()} menu.</p>
+                    </div>
+                    <div className="mt-auto flex flex-col gap-4">
+                      <p className="text-xl font-bold text-kamora-orange">{item.priceLabel}</p>
+                      <Button onClick={() => startCustomization(item)} className="w-full">
+                        Add to Order
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {customizingItem && (

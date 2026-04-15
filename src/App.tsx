@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CartProvider } from './contexts/CartContext';
 import { CartUiProvider } from './contexts/CartUiContext';
 import Navbar from './components/Navbar';
@@ -16,6 +16,13 @@ type TabKey = 'home' | 'menu' | 'about' | 'contact';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('home');
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#category-')) {
+      setActiveTab('menu');
+    }
+  }, []);
 
   return (
     <CartProvider>
