@@ -137,6 +137,10 @@
     }
   }
 
+  .custom-cursor-dot {
+    display: none;
+  }
+
   /* Navbar animations */
   @keyframes slideDownNav {
     from {

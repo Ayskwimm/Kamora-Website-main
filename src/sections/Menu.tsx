@@ -96,11 +96,13 @@ const Menu: React.FC = () => {
   const showCategoryView = (categoryKey: CategoryKey) => {
     window.history.replaceState(null, '', `${window.location.pathname}#category-${categoryKey}`);
     setActiveCategory(categoryKey);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const clearCategoryView = () => {
     window.history.replaceState(null, '', window.location.pathname);
     setActiveCategory(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const startCustomization = (item: MenuItem) => {

@@ -24,17 +24,22 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <CartProvider>
       <CartUiProvider>
         <div className="min-h-screen pt-16">
-          <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
-          {activeTab === 'home' && <EnhancedHero onNavigate={setActiveTab} />}
+          <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
+          {activeTab === 'home' && <EnhancedHero onNavigate={handleTabChange} />}
           {activeTab === 'home' && <QuickLinks />}
           {activeTab === 'menu' && <Menu />}
           {activeTab === 'about' && <About />}
           {activeTab === 'contact' && <Contact />}
-          <Footer onNavigate={setActiveTab} />
+          <Footer onNavigate={handleTabChange} />
           <FloatingCartButton />
           <FloatingCartModal />
         </div>
