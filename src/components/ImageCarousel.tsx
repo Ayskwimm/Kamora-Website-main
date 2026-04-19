@@ -48,12 +48,12 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   }
 
   return (
-    <div className="relative w-full h-64 md:h-80 overflow-hidden rounded-lg">
+    <div className="relative w-full h-48 md:h-56 overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
       {/* Main Image */}
       <img
         src={images[currentIndex]}
         alt={`${alt} - Image ${currentIndex + 1}`}
-        className="w-full h-full object-cover transition-opacity duration-500"
+        className="w-full h-full object-contain transition-opacity duration-500"
       />
 
       {/* Navigation Arrows */}

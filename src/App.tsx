@@ -3,6 +3,7 @@ import { CartProvider } from './contexts/CartContext';
 import { CartUiProvider } from './contexts/CartUiContext';
 import Navbar from './components/Navbar';
 import EnhancedHero from './components/EnhancedHero';
+import ScrollTextMarquee from './components/ScrollTextMarquee';
 import QuickLinks from './components/QuickLinks';
 import Menu from './sections/Menu';
 import About from './sections/About';
@@ -35,6 +36,7 @@ const App: React.FC = () => {
         <div className="min-h-screen pt-16">
           <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
           {activeTab === 'home' && <EnhancedHero onNavigate={handleTabChange} />}
+          {activeTab === 'home' && <ScrollTextMarquee />}
           {activeTab === 'home' && <QuickLinks />}
           {activeTab === 'menu' && <Menu />}
           {activeTab === 'about' && <About />}
