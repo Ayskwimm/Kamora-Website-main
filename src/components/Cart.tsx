@@ -10,6 +10,8 @@ type OrderDetails = {
     price: number;
     image: string;
     quantity: number;
+    customization?: string;
+    extraPrice?: number;
   }>;
   total: number;
   paymentMethod: 'gcash';
@@ -446,24 +448,37 @@ const Cart: React.FC = () => {
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4">Order Items</h3>
                 <div className="space-y-3">
-                  {orderDetails.items.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                        <div>
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-sm text-gray-500">Qty: {item.quantity} × ${item.price.toFixed(2)}</p>
+                  {orderDetails.items.map((item, index) => {
+                    const itemSubtotal = ((item.price + (item.extraPrice ?? 0)) * item.quantity).toFixed(2);
+                    return (
+                      <div key={index} className="flex flex-col gap-3 p-3 border rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-12 h-12 object-cover rounded"
+                            />
+                            <div>
+                              <p className="font-medium">{item.name}</p>
+                              <p className="text-sm text-gray-500">Qty: {item.quantity} × ${item.price.toFixed(2)}</p>
+                            </div>
+                          </div>
+                          <p className="font-semibold text-lg">${itemSubtotal}</p>
                         </div>
+                        {item.customization && (
+                          <p className="text-sm text-gray-600">
+                            <span className="font-semibold text-gray-700">Special instructions:</span> {item.customization}
+                          </p>
+                        )}
+                        {item.extraPrice ? (
+                          <p className="text-sm text-gray-600">
+                            <span className="font-semibold text-gray-700">Customization fee:</span> +₱{item.extraPrice.toFixed(2)} each
+                          </p>
+                        ) : null}
                       </div>
-                      <p className="font-semibold text-lg">
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
               

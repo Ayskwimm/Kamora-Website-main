@@ -6,6 +6,8 @@ interface OrderItem {
   price: number;
   quantity: number;
   image: string;
+  customization?: string;
+  extraPrice?: number;
 }
 
 interface OrderReceiptProps {
@@ -42,7 +44,6 @@ const OrderReceipt: React.FC<OrderReceiptProps> = ({
   };
 
   const saveAsPDF = () => {
-    // Create a simple text receipt for now
     const receiptContent = `
 KAMORA RESTAURANT - ORDER RECEIPT
 ====================================
@@ -52,13 +53,17 @@ Date: ${getCurrentDate()}
 
 ORDER DETAILS:
 -------------
-${orderItems.map(item => 
-  `${item.name}
+${orderItems.map(item => {
+  const customizationLines = item.customization ? `   Customization: ${item.customization}
+` : '';
+  const extraPriceLine = item.extraPrice ? `   Extra fee: +$${item.extraPrice.toFixed(2)} each
+` : '';
+  return `${item.name}
    Quantity: ${item.quantity}
    Price: $${item.price.toFixed(2)}
-   Subtotal: $${(item.price * item.quantity).toFixed(2)}
-   -------------------`
-).join('\n')}
+${customizationLines}${extraPriceLine}   Subtotal: $${((item.price + (item.extraPrice ?? 0)) * item.quantity).toFixed(2)}
+   -------------------`;
+}).join('\n')}
 
 PAYMENT METHOD: ${paymentMethod.toUpperCase()}
 SHIPPING PROVIDER: ${shippingProvider.toUpperCase()}
@@ -125,7 +130,7 @@ Enjoy your meal!
             <h3 className="text-lg font-semibold mb-4">Order Items</h3>
             <div className="space-y-4">
               {orderItems.map((item, index) => (
-                <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
                   <img 
                     src={item.image} 
                     alt={item.name}
@@ -134,9 +139,19 @@ Enjoy your meal!
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900">{item.name}</h4>
                     <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
+                    {item.customization && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        <span className="font-semibold text-gray-700">Customization:</span> {item.customization}
+                      </p>
+                    )}
+                    {item.extraPrice ? (
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold text-gray-700">Extra fee:</span> +₱{item.extraPrice.toFixed(2)} each
+                      </p>
+                    ) : null}
                   </div>
                   <div className="text-right">
-                    <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-medium">${((item.price + (item.extraPrice ?? 0)) * item.quantity).toFixed(2)}</p>
                     <p className="text-sm text-gray-500">${item.price.toFixed(2)} each</p>
                   </div>
                 </div>

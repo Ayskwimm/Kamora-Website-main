@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../contexts/CartContext';
 import Button from '../components/Button';
+import burgerWithCheeseImg from '../../assets/burgerwcheese.png';
+import burgerDeluxeImg from '../../assets/burgerdeluxe.png';
+import extraGravyImg from '../../assets/extragravy.png';
+import mushroomSoupImg from '../../assets/soupmushroom.png';
+import soupImg from '../../assets/SOUP.png';
+import iceTeaImg from '../../assets/ice-tea.png';
+import redIceTeaImg from '../../assets/redicetea.png';
 
 type CategoryKey = 'meal' | 'burger' | 'snacks' | 'soup' | 'drinks';
 
@@ -17,11 +24,11 @@ const getPlaceholderImage = (category: string) =>
   `https://via.placeholder.com/640x420/ffffff/cc1427?text=${encodeURIComponent(category)}`;
 
 const categories: { key: CategoryKey; label: string; icon: string; description: string; image: string }[] = [
-  { key: 'meal', label: 'Meals', icon: '🍽️', description: 'Fresh hot meals served with savory sides.', image: getPlaceholderImage('Meals') },
-  { key: 'burger', label: 'Burger', icon: '🍔', description: 'Juicy burgers with premium toppings.', image: getPlaceholderImage('Burger') },
+  { key: 'meal', label: 'Meals', icon: '🍽️', description: 'Fresh hot meals served with savory sides.', image: extraGravyImg },
+  { key: 'burger', label: 'Burger', icon: '🍔', description: 'Juicy burgers with premium toppings.', image: burgerWithCheeseImg },
   { key: 'snacks', label: 'Snacks', icon: '🍟', description: 'Crispy snacks made for sharing.', image: getPlaceholderImage('Snacks') },
-  { key: 'soup', label: 'Soup', icon: '🍲', description: 'Warm soups made to comfort and delight.', image: getPlaceholderImage('Soup') },
-  { key: 'drinks', label: 'Drinks', icon: '🥤', description: 'Refreshing beverages to complete every meal.', image: getPlaceholderImage('Drinks') },
+  { key: 'soup', label: 'Soup', icon: '🍲', description: 'Warm soups made to comfort and delight.', image: mushroomSoupImg },
+  { key: 'drinks', label: 'Drinks', icon: '🥤', description: 'Refreshing beverages to complete every meal.', image: iceTeaImg },
 ];
 
 const customizationOptions = [
@@ -32,22 +39,22 @@ const customizationOptions = [
 ];
 
 const menuItems: MenuItem[] = [
-  { id: 'kamote-fillet-with-gravy', name: 'Kamote fillet with gravy', category: 'meal', price: 108, priceLabel: '$108.00', image: getPlaceholderImage('Meals') },
-  { id: 'spicy-jamote-fillet-with-gravy', name: 'Spicy Kamote fillet with gravy', category: 'meal', price: 112, priceLabel: '$112.00', image: getPlaceholderImage('Meals') },
-  { id: 'garlic-butter-kamote-fillet-with-gravy', name: 'Garlic butter kamote fillet with gravy', category: 'meal', price: 116, priceLabel: '$116.00', image: getPlaceholderImage('Meals') },
-  { id: 'bbq-kamote-fillet-with-gravy', name: 'BBQ Kamote fillet with gravy', category: 'meal', price: 120, priceLabel: '$120.00', image: getPlaceholderImage('Meals') },
-  { id: 'kamote-fillet-ala-king', name: 'Kamote fillet Ala king', category: 'meal', price: 130, priceLabel: '$130.00', image: getPlaceholderImage('Meals') },
-  { id: 'kamote-fillet-with-cheese', name: 'Kamote fillet with cheese', category: 'meal', price: 128, priceLabel: '$128.00', image: getPlaceholderImage('Meals') },
-  { id: 'kamora-burger-with-cheese', name: 'Kamora burger with cheese', category: 'burger', price: 105, priceLabel: '$105.00', image: getPlaceholderImage('Burger') },
-  { id: 'kamora-burger-deluxe', name: 'Kamora burger deluxe', category: 'burger', price: 115, priceLabel: '$115.00', image: getPlaceholderImage('Burger') },
+  { id: 'kamote-fillet-with-gravy', name: 'Kamote fillet with gravy', category: 'meal', price: 108, priceLabel: '$108.00', image: extraGravyImg },
+  { id: 'spicy-jamote-fillet-with-gravy', name: 'Spicy Kamote fillet with gravy', category: 'meal', price: 112, priceLabel: '$112.00', image: extraGravyImg },
+  { id: 'garlic-butter-kamote-fillet-with-gravy', name: 'Garlic butter kamote fillet with gravy', category: 'meal', price: 116, priceLabel: '$116.00', image: extraGravyImg },
+  { id: 'bbq-kamote-fillet-with-gravy', name: 'BBQ Kamote fillet with gravy', category: 'meal', price: 120, priceLabel: '$120.00', image: extraGravyImg },
+  { id: 'kamote-fillet-ala-king', name: 'Kamote fillet Ala king', category: 'meal', price: 130, priceLabel: '$130.00', image: extraGravyImg },
+  { id: 'kamote-fillet-with-cheese', name: 'Kamote fillet with cheese', category: 'meal', price: 128, priceLabel: '$128.00', image: extraGravyImg },
+  { id: 'kamora-burger-with-cheese', name: 'Kamora burger with cheese', category: 'burger', price: 105, priceLabel: '$105.00', image: burgerWithCheeseImg },
+  { id: 'kamora-burger-deluxe', name: 'Kamora burger deluxe', category: 'burger', price: 115, priceLabel: '$115.00', image: burgerDeluxeImg },
   { id: 'kamote-fillet-bites-original', name: 'Kamote fillet bites original', category: 'snacks', price: 102, priceLabel: '$102.00', image: getPlaceholderImage('Snacks') },
   { id: 'kamote-fillet-bites-spicy', name: 'Kamote fillet bites spicy', category: 'snacks', price: 108, priceLabel: '$108.00', image: getPlaceholderImage('Snacks') },
   { id: 'kamote-fillet-bites-garlic-butter', name: 'Kamote fillet bites garlic butter', category: 'snacks', price: 110, priceLabel: '$110.00', image: getPlaceholderImage('Snacks') },
   { id: 'kamote-fillet-bites-bbq', name: 'Kamote fillet bites BBQ', category: 'snacks', price: 114, priceLabel: '$114.00', image: getPlaceholderImage('Snacks') },
-  { id: 'mushroom-soup', name: 'Mushroom soup', category: 'soup', price: 104, priceLabel: '$104.00', image: getPlaceholderImage('Soup') },
-  { id: 'crab-and-corn-soup', name: 'Crab and corn soup', category: 'soup', price: 106, priceLabel: '$106.00', image: getPlaceholderImage('Soup') },
-  { id: 'ice-tea', name: 'Ice tea', category: 'drinks', price: 52, priceLabel: '$52.00', image: getPlaceholderImage('Drinks') },
-  { id: 'red-ice-tea', name: 'Red ice tea', category: 'drinks', price: 55, priceLabel: '$52.00', image: getPlaceholderImage('Drinks') },
+  { id: 'mushroom-soup', name: 'Mushroom soup', category: 'soup', price: 104, priceLabel: '$104.00', image: mushroomSoupImg },
+  { id: 'crab-and-corn-soup', name: 'Crab and corn soup', category: 'soup', price: 106, priceLabel: '$106.00', image: soupImg },
+  { id: 'ice-tea', name: 'Ice tea', category: 'drinks', price: 52, priceLabel: '$52.00', image: iceTeaImg },
+  { id: 'red-ice-tea', name: 'Red ice tea', category: 'drinks', price: 55, priceLabel: '$55.00', image: redIceTeaImg },
 ];
 
 const Menu: React.FC = () => {
