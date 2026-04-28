@@ -27,15 +27,12 @@ interface MenuItem {
   name: string;
   category: CategoryKey;
 
-
-
   price: number;
   priceLabel: string;
+  comboPriceLabel?: string;
+  comboPrice?: number;
   image: string;
 }
-
-const getPlaceholderImage = (category: string) =>
-  `https://via.placeholder.com/640x420/ffffff/cc1427?text=${encodeURIComponent(category)}`;
 
 const categories: { key: CategoryKey; label: string; icon: string; description: string; image: string }[] = [
   { key: 'meal', label: 'Meals', icon: '🍽️', description: 'Fresh hot meals served with savory sides.', image: mealOriginalImg },
@@ -50,6 +47,15 @@ const customizationOptions = [
   { label: 'Extra rice', value: 'Extra rice', price: 15, image: rice },
 ];
 
+const comboPricingMap: Record<string, Record<string, number>> = {
+  'Kamofile original with gravy': { 'Mushroom soup': 89, 'Crab and corn soup': 95 },
+  'Kamofile spicy flavor': { 'Mushroom soup': 95, 'Crab and corn soup': 99 },
+  'Kamofile buttered garlic flavor': { 'Mushroom soup': 95, 'Crab and corn soup': 99 },
+  'Kamofile BBQ flavor': { 'Mushroom soup': 95, 'Crab and corn soup': 99 },
+  'Kamofile a la king': { 'Mushroom soup': 99, 'Crab and corn soup': 105 },
+  'Cheesy kamofile': { 'Mushroom soup': 99, 'Crab and corn soup': 105 },
+};
+
 const menuItems: MenuItem[] = [
   { id: 'Kamofile-original-with-gravy', name: 'Kamofile original with gravy', category: 'meal', price: 108, priceLabel: '₱39.00', image: mealOriginalImg },
   { id: 'Kamofile-spicy-flavor', name: 'Kamofile spicy flavor', category: 'meal', price: 112, priceLabel: '₱45.00', image: mealSpicyImg },
@@ -63,8 +69,8 @@ const menuItems: MenuItem[] = [
   { id: 'kamo-bites-spicy', name: 'kamo-bites spicy', category: 'snacks', price: 108, priceLabel: '₱65.00', image: bitesSpicy},
   { id: 'kamo-bites-bbq', name: 'kamo-bites BBQ', category: 'snacks', price: 110, priceLabel: '₱65.00', image: bitesBbq},
   { id: 'kamo-bites-buttered-garlic', name: 'kamo-bites buttered garlic', category: 'snacks', price: 114, priceLabel: '₱69.00', image: bitesGarlic },
-  { id: 'mushroom-soup', name: 'Mushroom soup', category: 'soup', price: 104, priceLabel: '₱39.00', image: mushroomSoupImg },
-  { id: 'crab-and-corn-soup', name: 'Crab and corn soup', category: 'soup', price: 106, priceLabel: '₱45.00', image: soupImg },
+  { id: 'mushroom-soup', name: 'Mushroom soup', category: 'soup', price: 104, priceLabel: '₱39.00', comboPriceLabel: '₱89.00', comboPrice: 89, image: mushroomSoupImg },
+  { id: 'crab-and-corn-soup', name: 'Crab and corn soup', category: 'soup', price: 106, priceLabel: '₱45.00', comboPriceLabel: '₱95.00', comboPrice: 95, image: soupImg },
   { id: 'ice-tea', name: 'Ice tea', category: 'drinks', price: 52, priceLabel: '₱19.00', image: iceTeaImg },
   { id: 'red-ice-tea', name: 'Red tea', category: 'drinks', price: 55, priceLabel: '₱19.00', image: redIceTeaImg },
 ];
@@ -73,15 +79,14 @@ const Menu: React.FC = () => {
   const { addItem } = useCart();
   const [activeCategory, setActiveCategory] = useState<CategoryKey | null>(null);
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
-  const [selectedOption, setSelectedOption] = useState('Extra gravy');
-  const [customOptionPrice, setCustomOptionPrice] = useState(15);
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>({
+    'Extra gravy': 0,
+    'Extra rice': 0,
+  });
   const [selectedSize, setSelectedSize] = useState('Solo');
   const [selectedSoup, setSelectedSoup] = useState<string | null>(null);
   const [selectedDrink, setSelectedDrink] = useState<string | null>(null);
   const [selectedDrinkSize, setSelectedDrinkSize] = useState<'Regular' | 'Large'>('Regular');
-  const [drinkSizePrice, setDrinkSizePrice] = useState(30);
-  const [drinkCarouselScroll, setDrinkCarouselScroll] = useState(0);
-  const [customizationNote, setCustomizationNote] = useState('');
   const [notificationMessage, setNotificationMessage] = useState('');
   const [showNotification, setShowNotification] = useState(false);
 
@@ -133,42 +138,53 @@ const Menu: React.FC = () => {
   const startCustomization = (item: MenuItem) => {
     setCustomizingItem(item);
     setSelectedSize('Solo');
-    setSelectedOption('Extra gravy');
-    setCustomOptionPrice(15);
+    setAddonQuantities({
+      'Extra gravy': 0,
+      'Extra rice': 0,
+    });
     setSelectedSoup(null);
     setSelectedDrink(null);
     setSelectedDrinkSize('Regular');
-    setDrinkSizePrice(30);
-    setCustomizationNote('');
   };
 
   const closeCustomization = () => {
     setCustomizingItem(null);
-    setSelectedOption('Extra gravy');
-    setCustomOptionPrice(15);
+    setAddonQuantities({
+      'Extra gravy': 0,
+      'Extra rice': 0,
+    });
     setSelectedSize('Solo');
     setSelectedSoup(null);
     setSelectedDrink(null);
     setSelectedDrinkSize('Regular');
-    setDrinkSizePrice(30);
-    setCustomizationNote('');
   };
 
   const handleAddToCart = () => {
     if (!customizingItem) return;
 
     let customizationText = `${selectedSize}`;
-    let totalExtraPrice = customOptionPrice;
-    
+    let totalExtraPrice = 0;
+    const addonLines: string[] = [];
+
+    customizationOptions.forEach((option) => {
+      const qty = addonQuantities[option.value] || 0;
+      if (qty > 0) {
+        addonLines.push(`${option.value} x${qty}`);
+        totalExtraPrice += option.price * qty;
+      }
+    });
+
     if (selectedSize === 'Combo') {
-      if (selectedSoup) customizationText += ` - Soup: ${selectedSoup}`;
+      if (selectedSoup) {
+        customizationText += ` - Soup: ${selectedSoup}`;
+        totalExtraPrice += (comboDisplayPrice - customizingItem.price);
+      }
       if (selectedDrink) customizationText += ` - Drink: ${selectedDrink} (${selectedDrinkSize})`;
-      totalExtraPrice = drinkSizePrice;
-    } else {
-      if (selectedOption) customizationText += ` - ${selectedOption}`;
     }
-    
-    if (customizationNote) customizationText += ` · ${customizationNote}`;
+
+    if (addonLines.length > 0) {
+      customizationText += ` - ${addonLines.join(', ')}`;
+    }
 
     const sanitizedCustomization = customizationText.trim().replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').toLowerCase();
     const cartItemId = customizingItem.id + (sanitizedCustomization ? `-${sanitizedCustomization}` : '');
@@ -187,12 +203,31 @@ const Menu: React.FC = () => {
     closeCustomization();
   };
 
-  const handleOptionChange = (optionValue: string, price: number) => {
-    setSelectedOption(optionValue);
-    setCustomOptionPrice(price);
+  const updateAddonQuantity = (optionValue: string, quantity: number) => {
+    setAddonQuantities((prev) => ({
+      ...prev,
+      [optionValue]: quantity,
+    }));
   };
 
   const activeCategoryData = activeCategory ? categories.find((category) => category.key === activeCategory) : null;
+
+  const getComboPrice = (): number => {
+    if (!selectedSize || selectedSize === 'Solo' || !customizingItem || !selectedSoup) return 0;
+    return comboPricingMap[customizingItem.name]?.[selectedSoup] ?? 0;
+  };
+
+  const comboDisplayPrice = getComboPrice();
+
+  const addonTotalPrice = customizationOptions.reduce(
+    (sum, option) => sum + (addonQuantities[option.value] || 0) * option.price,
+    0
+  );
+
+  const totalAddonFee = addonTotalPrice;
+
+  const isComboRequirementsMet = selectedSize === 'Combo' ? selectedSoup && selectedDrink : true;
+  const canAddToCart = isComboRequirementsMet;
 
   return (
     <section id="menu" className="section-padding bg-gray-50">
@@ -350,11 +385,17 @@ const Menu: React.FC = () => {
                   className="w-full max-w-xs h-auto object-cover rounded-2xl mb-4"
                 />
                 <h4 className="text-lg font-bold text-kamora-dark text-center">{customizingItem.name} - {selectedSize}</h4>
+                {selectedSize === 'Solo' && (
+                  <p className="mt-2 text-xl font-bold text-kamora-orange text-center">{customizingItem.priceLabel}</p>
+                )}
+                {selectedSize === 'Combo' && comboDisplayPrice > 0 && (
+                  <p className="mt-2 text-sm font-semibold text-kamora-orange text-center">
+                    ₱{comboDisplayPrice.toFixed(2)}
+                  </p>
+                )}
               </div>
 
-              {/* Options Section */}
               <div className="md:w-2/3 p-6 space-y-6">
-                {/* Size/Portion Selector */}
                 <div>
                   <p className="text-sm font-semibold text-gray-700 mb-3">Customize your order</p>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -368,7 +409,6 @@ const Menu: React.FC = () => {
                             setSelectedSoup(null);
                             setSelectedDrink(null);
                             setSelectedDrinkSize('Regular');
-                            setDrinkSizePrice(30);
                           }
                         }}
                         className={`rounded-2xl border px-4 py-3 text-center transition font-semibold ${
@@ -513,7 +553,6 @@ const Menu: React.FC = () => {
                                 type="button"
                                 onClick={() => {
                                   setSelectedDrinkSize(option.size as 'Regular' | 'Large');
-                                  setDrinkSizePrice(option.price);
                                 }}
                                 className={`rounded-2xl border px-4 py-4 text-center transition ${
                                   selectedDrinkSize === option.size
@@ -534,16 +573,13 @@ const Menu: React.FC = () => {
                     <div>
                       <p className="text-sm font-semibold text-gray-700 mb-3">Include Add-ons</p>
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {customizationOptions.map((option) => (
-                          <button
-                            key={option.value}
-                            type="button"
-                            onClick={() => handleOptionChange(option.value, option.price)}
-                            className={selectedOption === option.value
-                              ? 'rounded-2xl border overflow-hidden transition border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
-                              : 'rounded-2xl border overflow-hidden transition border-gray-200 bg-white text-gray-700 hover:border-kamora-orange'}
-                          >
-                            <div className="flex flex-col h-full">
+                        {customizationOptions.map((option) => {
+                          const qty = addonQuantities[option.value] || 0;
+                          return (
+                            <div
+                              key={option.value}
+                              className="rounded-2xl border border-gray-200 bg-white overflow-hidden transition"
+                            >
                               <div className="relative w-full h-40 overflow-hidden bg-gray-100">
                                 <img
                                   src={option.image}
@@ -551,13 +587,32 @@ const Menu: React.FC = () => {
                                   className="w-full h-full object-cover"
                                 />
                               </div>
-                              <div className="flex-1 p-3 flex flex-col justify-between">
-                                <span className="font-semibold text-sm">{option.label}</span>
-                                <span className="text-sm text-kamora-orange font-medium">+₱{option.price}</span>
+                              <div className="p-4 space-y-3">
+                                <div>
+                                  <p className="font-semibold text-sm text-kamora-dark">{option.label}</p>
+                                  <p className="text-sm text-kamora-orange font-medium">+₱{option.price}</p>
+                                </div>
+                                <div className="flex items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-3 py-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => updateAddonQuantity(option.value, Math.max(0, qty - 1))}
+                                    className="h-8 w-8 rounded-full bg-white text-kamora-dark shadow-sm hover:bg-gray-100"
+                                  >
+                                    −
+                                  </button>
+                                  <span className="text-sm font-semibold">{qty}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => updateAddonQuantity(option.value, qty + 1)}
+                                    className="h-8 w-8 rounded-full bg-white text-kamora-dark shadow-sm hover:bg-gray-100"
+                                  >
+                                    +
+                                  </button>
+                                </div>
                               </div>
                             </div>
-                          </button>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </>
@@ -568,16 +623,13 @@ const Menu: React.FC = () => {
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-3">Include Add-ons</p>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      {customizationOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          onClick={() => handleOptionChange(option.value, option.price)}
-                          className={selectedOption === option.value
-                            ? 'rounded-2xl border overflow-hidden transition border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
-                            : 'rounded-2xl border overflow-hidden transition border-gray-200 bg-white text-gray-700 hover:border-kamora-orange'}
-                        >
-                          <div className="flex flex-col h-full">
+                      {customizationOptions.map((option) => {
+                        const qty = addonQuantities[option.value] || 0;
+                        return (
+                          <div
+                            key={option.value}
+                            className="rounded-2xl border border-gray-200 bg-white overflow-hidden transition"
+                          >
                             <div className="relative w-full h-40 overflow-hidden bg-gray-100">
                               <img
                                 src={option.image}
@@ -585,48 +637,66 @@ const Menu: React.FC = () => {
                                 className="w-full h-full object-cover"
                               />
                             </div>
-                            <div className="flex-1 p-3 flex flex-col justify-between">
-                              <span className="font-semibold text-sm">{option.label}</span>
-                              <span className="text-sm text-kamora-orange font-medium">+₱{option.price}</span>
+                            <div className="p-4 space-y-3">
+                              <div>
+                                <p className="font-semibold text-sm text-kamora-dark">{option.label}</p>
+                                <p className="text-sm text-kamora-orange font-medium">+₱{option.price}</p>
+                              </div>
+                              <div className="flex items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-3 py-2">
+                                <button
+                                  type="button"
+                                  onClick={() => updateAddonQuantity(option.value, Math.max(0, qty - 1))}
+                                  className="h-8 w-8 rounded-full bg-white text-kamora-dark shadow-sm hover:bg-gray-100"
+                                >
+                                  −
+                                </button>
+                                <span className="text-sm font-semibold">{qty}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => updateAddonQuantity(option.value, qty + 1)}
+                                  className="h-8 w-8 rounded-full bg-white text-kamora-dark shadow-sm hover:bg-gray-100"
+                                >
+                                  +
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </button>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
 
-                {/* Special Instructions */}
-                <div className="bg-kamora-cream rounded-3xl p-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Special instructions <span className="text-gray-500">(optional)</span>
-                  </label>
-                  <textarea
-                    value={customizationNote}
-                    onChange={(e) => setCustomizationNote(e.target.value)}
-                    rows={3}
-                    placeholder="Optional: Add requests like less salt, extra sauce, or no onions"
-                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kamora-orange"
-                  />
-                </div>
-
                 {/* Footer */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t pt-6">
                   <div>
-                    <p className="text-sm text-gray-500">{selectedSize === 'Combo' ? 'Drink size' : 'Add-ons'} fee</p>
-                    <p className="text-lg font-bold text-kamora-orange">+₱{(selectedSize === 'Combo' ? drinkSizePrice : customOptionPrice).toFixed(2)}</p>
+                    <p className="text-sm text-gray-500">Add-ons fee</p>
+                    <p className="text-lg font-bold text-kamora-orange">+₱{totalAddonFee.toFixed(2)}</p>
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    <Button
-                      onClick={closeCustomization}
-                      variant="secondary"
-                      className="px-5 py-3 !bg-red-500 !text-white !border-red-500 hover:!bg-red-600 hover:!border-red-600"
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={handleAddToCart} variant="primary" className="px-5 py-3">
-                      Add to Cart
-                    </Button>
+                  <div className="flex flex-col gap-2">
+                    {selectedSize === 'Combo' && !selectedSoup && (
+                      <p className="text-sm text-red-600 font-medium">Please select a soup</p>
+                    )}
+                    {selectedSize === 'Combo' && selectedSoup && !selectedDrink && (
+                      <p className="text-sm text-red-600 font-medium">Please select a drink</p>
+                    )}
+                    <div className="flex flex-wrap gap-3">
+                      <Button
+                        onClick={closeCustomization}
+                        variant="secondary"
+                        className="px-5 py-3 !bg-red-500 !text-white !border-red-500 hover:!bg-red-600 hover:!border-red-600"
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleAddToCart} 
+                        variant="primary" 
+                        className="px-5 py-3"
+                        disabled={!canAddToCart}
+                      >
+                        Add to Cart
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
