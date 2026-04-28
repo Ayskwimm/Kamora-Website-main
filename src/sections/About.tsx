@@ -1,18 +1,27 @@
 import React from 'react';
 import MemberCard from '../components/MemberCard';
-
+import albutraImg from '../../assets/albutra.png';
+import aspaImg from '../../assets/aspa.png';
+import canlasImg from '../../assets/canlas.png';
+import comediaImg from '../../assets/comedia.png';
+import danoImg from '../../assets/dano.png';
+import diestaImg from '../../assets/diesta.png';
+import ortegaImg from '../../assets/ortega.png';
+import pauleImg from '../../assets/paule.png';
+import reynaldaImg from '../../assets/reynalda.png';
+import villanuevaImg from '../../assets/villanueva.png';
 const About: React.FC = () => {
   const members = [
-    { name: 'Kathleen Pearl Albutra', role: 'Partner' },
-    { name: 'Angela Jodi Aspa', role: 'Partner' },
-    { name: 'Marc Edison Canlas', role: 'Partner' },
-    { name: 'Angel Comedia', role: 'Partner' },
-    { name: 'Ervin Lemuel Daño', role: 'Partner' },
-    { name: 'Norlyn Diesta', role: 'Partner' },
-    { name: 'James Clarence Paule', role: 'Partner' },
-    { name: 'Ronalyn Ortega', role: 'Partner' },
-    { name: 'Chanmae Reynalda', role: 'Partner' },
-    { name: 'Renelyn Villanueva', role: 'Partner' },
+    { name: 'Kathleen Pearl Albutra', role: 'Partner', avatar: albutraImg },
+    { name: 'Angela Jodi Aspa', role: 'Partner', avatar: aspaImg },
+    { name: 'Marc Edison Canlas', role: 'Partner', avatar: canlasImg },
+    { name: 'Angel Comedia', role: 'Partner', avatar: comediaImg },
+    { name: 'Ervin Lemuel Daño', role: 'Partner', avatar: danoImg },
+    { name: 'Norlyn Diesta', role: 'Partner', avatar: diestaImg },
+    { name: 'James Clarence Paule', role: 'Partner', avatar: pauleImg },
+    { name: 'Ronalyn Ortega', role: 'Partner', avatar: ortegaImg },
+    { name: 'Chanmae Reynalda', role: 'Partner', avatar: reynaldaImg },
+    { name: 'Renelyn Villanueva', role: 'Partner', avatar: villanuevaImg },
   ];
 
   return (
@@ -59,15 +68,15 @@ const About: React.FC = () => {
 
             <div className="grid gap-6">
               <div className="rounded-[32px] border border-gray-200 bg-white p-8 shadow-lg">
-                <h3 className="text-2xl font-heading font-bold text-kamora-dark mb-3">Our Mission</h3>
+                <h3 className="text-2xl font-heading font-bold text-kamora-dark mb-3">Our Vision</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  To serve consistent, delicious meals crafted with care, making every guest feel welcome and excited to return.
+                  To be recognized as a reliable food brand that provides affordable, modern and nutritious fillets made from kamote.
                 </p>
               </div>
               <div className="rounded-[32px] border border-gray-200 bg-white p-8 shadow-lg">
-                <h3 className="text-2xl font-heading font-bold text-kamora-dark mb-3">Our Vision</h3>
+                <h3 className="text-2xl font-heading font-bold text-kamora-dark mb-3">Our Mission</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  To become the go-to place for families and friends seeking memorable dining, exceptional service, and quality food.
+                   To provide safe, nutritious, and affordable plant-based fillet products made from locally sourced ingredients, helping consumers enjoy healthier meals without compromising taste or budget.
                 </p>
               </div>
             </div>
@@ -136,14 +145,14 @@ const About: React.FC = () => {
                 </h3>
               </div>
             </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 items-stretch">
               {members.map((member, index) => (
                 <div
                   key={member.name}
-                  className="opacity-0"
+                  className="opacity-0 h-full"
                   style={{ animation: `slideInUp 0.5s ease-out forwards ${index * 0.08 + 0.15}s` }}
                 >
-                  <MemberCard name={member.name} role={member.role} />
+                  <MemberCard name={member.name} role={member.role} avatar={member.avatar} />
                 </div>
               ))}
             </div>
