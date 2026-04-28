@@ -8,6 +8,17 @@ import mushroomSoupImg from '../../assets/soupmushroom.png';
 import soupImg from '../../assets/SOUP.png';
 import iceTeaImg from '../../assets/ice-tea.png';
 import redIceTeaImg from '../../assets/redicetea.png';
+import mealOriginalImg from '../../assets/mealOriginal.png';
+import mealBbqImg from '../../assets/mealBBQ.png';
+import mealSpicyImg from '../../assets/mealSpicy.png';
+import mealGarlicImg from '../../assets/mealgarlic.png';
+import mealAlakingImg from '../../assets/mealAlaking.png';
+import mealCheeseImg from '../../assets/mealcheese.png';
+import bitesOriginal from '../../assets/bitesOriginal.png';
+import bitesSpicy from '../../assets/bitesSpicy.png';
+import bitesBbq from '../../assets/bitesBBQ.png';
+import bitesGarlic from '../../assets/bitesGarlic.png';
+import rice from '../../assets/RICE.webp';
 
 type CategoryKey = 'meal' | 'burger' | 'snacks' | 'soup' | 'drinks';
 
@@ -15,6 +26,9 @@ interface MenuItem {
   id: string;
   name: string;
   category: CategoryKey;
+
+
+
   price: number;
   priceLabel: string;
   image: string;
@@ -24,45 +38,49 @@ const getPlaceholderImage = (category: string) =>
   `https://via.placeholder.com/640x420/ffffff/cc1427?text=${encodeURIComponent(category)}`;
 
 const categories: { key: CategoryKey; label: string; icon: string; description: string; image: string }[] = [
-  { key: 'meal', label: 'Meals', icon: '🍽️', description: 'Fresh hot meals served with savory sides.', image: extraGravyImg },
+  { key: 'meal', label: 'Meals', icon: '🍽️', description: 'Fresh hot meals served with savory sides.', image: mealOriginalImg },
   { key: 'burger', label: 'Burger', icon: '🍔', description: 'Juicy burgers with premium toppings.', image: burgerWithCheeseImg },
-  { key: 'snacks', label: 'Snacks', icon: '🍟', description: 'Crispy snacks made for sharing.', image: getPlaceholderImage('Snacks') },
+  { key: 'snacks', label: 'Snacks', icon: '🍟', description: 'Crispy snacks made for sharing.', image: bitesOriginal },
   { key: 'soup', label: 'Soup', icon: '🍲', description: 'Warm soups made to comfort and delight.', image: mushroomSoupImg },
   { key: 'drinks', label: 'Drinks', icon: '🥤', description: 'Refreshing beverages to complete every meal.', image: iceTeaImg },
 ];
 
 const customizationOptions = [
-  { label: 'No extras', value: 'No extras', price: 0 },
-  { label: 'Extra gravy', value: 'Extra gravy', price: 15 },
-  { label: 'Extra cheese', value: 'Extra cheese', price: 25 },
-  { label: 'Spicy kick', value: 'Spicy kick', price: 20 },
+  { label: 'Extra gravy', value: 'Extra gravy', price: 10, image: extraGravyImg },
+  { label: 'Extra rice', value: 'Extra rice', price: 15, image: rice },
 ];
 
 const menuItems: MenuItem[] = [
-  { id: 'kamote-fillet-with-gravy', name: 'Kamote fillet with gravy', category: 'meal', price: 108, priceLabel: '$108.00', image: extraGravyImg },
-  { id: 'spicy-jamote-fillet-with-gravy', name: 'Spicy Kamote fillet with gravy', category: 'meal', price: 112, priceLabel: '$112.00', image: extraGravyImg },
-  { id: 'garlic-butter-kamote-fillet-with-gravy', name: 'Garlic butter kamote fillet with gravy', category: 'meal', price: 116, priceLabel: '$116.00', image: extraGravyImg },
-  { id: 'bbq-kamote-fillet-with-gravy', name: 'BBQ Kamote fillet with gravy', category: 'meal', price: 120, priceLabel: '$120.00', image: extraGravyImg },
-  { id: 'kamote-fillet-ala-king', name: 'Kamote fillet Ala king', category: 'meal', price: 130, priceLabel: '$130.00', image: extraGravyImg },
-  { id: 'kamote-fillet-with-cheese', name: 'Kamote fillet with cheese', category: 'meal', price: 128, priceLabel: '$128.00', image: extraGravyImg },
-  { id: 'kamora-burger-with-cheese', name: 'Kamora burger with cheese', category: 'burger', price: 105, priceLabel: '$105.00', image: burgerWithCheeseImg },
-  { id: 'kamora-burger-deluxe', name: 'Kamora burger deluxe', category: 'burger', price: 115, priceLabel: '$115.00', image: burgerDeluxeImg },
-  { id: 'kamote-fillet-bites-original', name: 'Kamote fillet bites original', category: 'snacks', price: 102, priceLabel: '$102.00', image: getPlaceholderImage('Snacks') },
-  { id: 'kamote-fillet-bites-spicy', name: 'Kamote fillet bites spicy', category: 'snacks', price: 108, priceLabel: '$108.00', image: getPlaceholderImage('Snacks') },
-  { id: 'kamote-fillet-bites-garlic-butter', name: 'Kamote fillet bites garlic butter', category: 'snacks', price: 110, priceLabel: '$110.00', image: getPlaceholderImage('Snacks') },
-  { id: 'kamote-fillet-bites-bbq', name: 'Kamote fillet bites BBQ', category: 'snacks', price: 114, priceLabel: '$114.00', image: getPlaceholderImage('Snacks') },
-  { id: 'mushroom-soup', name: 'Mushroom soup', category: 'soup', price: 104, priceLabel: '$104.00', image: mushroomSoupImg },
-  { id: 'crab-and-corn-soup', name: 'Crab and corn soup', category: 'soup', price: 106, priceLabel: '$106.00', image: soupImg },
-  { id: 'ice-tea', name: 'Ice tea', category: 'drinks', price: 52, priceLabel: '$52.00', image: iceTeaImg },
-  { id: 'red-ice-tea', name: 'Red ice tea', category: 'drinks', price: 55, priceLabel: '$55.00', image: redIceTeaImg },
+  { id: 'Kamofile-original-with-gravy', name: 'Kamofile original with gravy', category: 'meal', price: 108, priceLabel: '₱39.00', image: mealOriginalImg },
+  { id: 'Kamofile-spicy-flavor', name: 'Kamofile spicy flavor', category: 'meal', price: 112, priceLabel: '₱45.00', image: mealSpicyImg },
+  { id: 'Kamofile-buttered-garlic-flavor', name: 'Kamofile buttered garlic flavor', category: 'meal', price: 116, priceLabel: '₱45.00', image: mealGarlicImg },
+  { id: 'Kamofile-BBQ-flavor', name: 'Kamofile BBQ flavor', category: 'meal', price: 120, priceLabel: '₱45.00', image: mealBbqImg },
+  { id: 'Kamofile-a-la-king', name: 'Kamofile a la king', category: 'meal', price: 130, priceLabel: '₱49.00', image: mealAlakingImg },
+  { id: 'Cheesy-kamofile', name: 'Cheesy kamofile', category: 'meal', price: 128, priceLabel: '₱49.00', image: mealCheeseImg },
+  { id: 'kamora-burger-with-cheese', name: 'Kamora burger with cheese', category: 'burger', price: 105, priceLabel: '₱49.00', image: burgerWithCheeseImg },
+  { id: 'kamora-burger-deluxe', name: 'Kamora burger deluxe', category: 'burger', price: 115, priceLabel: '₱69.00', image: burgerDeluxeImg },
+  { id: 'kamo-bites-original', name: 'kamo-bites original', category: 'snacks', price: 102, priceLabel: '₱55.00', image: bitesOriginal},
+  { id: 'kamo-bites-spicy', name: 'kamo-bites spicy', category: 'snacks', price: 108, priceLabel: '₱65.00', image: bitesSpicy},
+  { id: 'kamo-bites-bbq', name: 'kamo-bites BBQ', category: 'snacks', price: 110, priceLabel: '₱65.00', image: bitesBbq},
+  { id: 'kamo-bites-buttered-garlic', name: 'kamo-bites buttered garlic', category: 'snacks', price: 114, priceLabel: '₱69.00', image: bitesGarlic },
+  { id: 'mushroom-soup', name: 'Mushroom soup', category: 'soup', price: 104, priceLabel: '₱39.00', image: mushroomSoupImg },
+  { id: 'crab-and-corn-soup', name: 'Crab and corn soup', category: 'soup', price: 106, priceLabel: '₱45.00', image: soupImg },
+  { id: 'ice-tea', name: 'Ice tea', category: 'drinks', price: 52, priceLabel: '₱19.00', image: iceTeaImg },
+  { id: 'red-ice-tea', name: 'Red tea', category: 'drinks', price: 55, priceLabel: '₱19.00', image: redIceTeaImg },
 ];
 
 const Menu: React.FC = () => {
   const { addItem } = useCart();
   const [activeCategory, setActiveCategory] = useState<CategoryKey | null>(null);
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
-  const [selectedOption, setSelectedOption] = useState('No extras');
-  const [customOptionPrice, setCustomOptionPrice] = useState(0);
+  const [selectedOption, setSelectedOption] = useState('Extra gravy');
+  const [customOptionPrice, setCustomOptionPrice] = useState(15);
+  const [selectedSize, setSelectedSize] = useState('Solo');
+  const [selectedSoup, setSelectedSoup] = useState<string | null>(null);
+  const [selectedDrink, setSelectedDrink] = useState<string | null>(null);
+  const [selectedDrinkSize, setSelectedDrinkSize] = useState<'Regular' | 'Large'>('Regular');
+  const [drinkSizePrice, setDrinkSizePrice] = useState(30);
+  const [drinkCarouselScroll, setDrinkCarouselScroll] = useState(0);
   const [customizationNote, setCustomizationNote] = useState('');
   const [notificationMessage, setNotificationMessage] = useState('');
   const [showNotification, setShowNotification] = useState(false);
@@ -114,24 +132,43 @@ const Menu: React.FC = () => {
 
   const startCustomization = (item: MenuItem) => {
     setCustomizingItem(item);
-    setSelectedOption('No extras');
-    setCustomOptionPrice(0);
+    setSelectedSize('Solo');
+    setSelectedOption('Extra gravy');
+    setCustomOptionPrice(15);
+    setSelectedSoup(null);
+    setSelectedDrink(null);
+    setSelectedDrinkSize('Regular');
+    setDrinkSizePrice(30);
     setCustomizationNote('');
   };
 
   const closeCustomization = () => {
     setCustomizingItem(null);
-    setSelectedOption('No extras');
-    setCustomOptionPrice(0);
+    setSelectedOption('Extra gravy');
+    setCustomOptionPrice(15);
+    setSelectedSize('Solo');
+    setSelectedSoup(null);
+    setSelectedDrink(null);
+    setSelectedDrinkSize('Regular');
+    setDrinkSizePrice(30);
     setCustomizationNote('');
   };
 
   const handleAddToCart = () => {
     if (!customizingItem) return;
 
-    const customizationText = selectedOption === 'No extras'
-      ? customizationNote
-      : `${selectedOption}${customizationNote ? ` · ${customizationNote}` : ''}`;
+    let customizationText = `${selectedSize}`;
+    let totalExtraPrice = customOptionPrice;
+    
+    if (selectedSize === 'Combo') {
+      if (selectedSoup) customizationText += ` - Soup: ${selectedSoup}`;
+      if (selectedDrink) customizationText += ` - Drink: ${selectedDrink} (${selectedDrinkSize})`;
+      totalExtraPrice = drinkSizePrice;
+    } else {
+      if (selectedOption) customizationText += ` - ${selectedOption}`;
+    }
+    
+    if (customizationNote) customizationText += ` · ${customizationNote}`;
 
     const sanitizedCustomization = customizationText.trim().replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').toLowerCase();
     const cartItemId = customizingItem.id + (sanitizedCustomization ? `-${sanitizedCustomization}` : '');
@@ -142,7 +179,7 @@ const Menu: React.FC = () => {
       price: customizingItem.price,
       image: customizingItem.image,
       customization: customizationText || undefined,
-      extraPrice: customOptionPrice || undefined,
+      extraPrice: totalExtraPrice || undefined,
     });
 
     setNotificationMessage(`${customizingItem.name} added to cart successfully.`);
@@ -283,15 +320,14 @@ const Menu: React.FC = () => {
       </div>
 
       {customizingItem && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm p-4 flex items-start justify-center overflow-y-auto pt-6" onClick={closeCustomization}>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm p-4 flex items-center justify-center overflow-y-auto" onClick={closeCustomization}>
           <div
-            className="relative w-full max-w-2xl rounded-[32px] bg-white shadow-2xl overflow-hidden max-h-[calc(100vh-4rem)]"
+            className="relative w-full max-w-4xl rounded-[32px] bg-white shadow-2xl overflow-hidden max-h-[calc(100vh-4rem)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between p-6 border-b">
               <div>
-                <h3 className="text-2xl font-bold text-kamora-dark">Customize Your Meal</h3>
-                <p className="text-sm text-gray-500">Select your options and add the item to cart.</p>
+                <h3 className="text-2xl font-bold text-kamora-dark">Customize your Order</h3>
               </div>
               <button
                 type="button"
@@ -305,36 +341,262 @@ const Menu: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(100vh-16rem)]">
-              <div>
-                <p className="text-sm font-semibold text-gray-700">Item</p>
-                <p className="text-xl font-bold text-kamora-dark">{customizingItem.name}</p>
+            <div className="flex flex-col md:flex-row overflow-y-auto max-h-[calc(100vh-10rem)]">
+              {/* Product Image Section */}
+              <div className="md:w-1/3 p-6 flex flex-col items-center justify-center bg-gray-50 border-r">
+                <img
+                  src={selectedSize === 'Combo' ? 'https://via.placeholder.com/300x300/f5f5f5/999999?text=Combo+Meal' : customizingItem.image}
+                  alt={selectedSize === 'Combo' ? 'Combo Meal' : customizingItem.name}
+                  className="w-full max-w-xs h-auto object-cover rounded-2xl mb-4"
+                />
+                <h4 className="text-lg font-bold text-kamora-dark text-center">{customizingItem.name} - {selectedSize}</h4>
               </div>
 
-              <div className="space-y-4">
+              {/* Options Section */}
+              <div className="md:w-2/3 p-6 space-y-6">
+                {/* Size/Portion Selector */}
                 <div>
-                  <p className="text-sm font-semibold text-gray-700 mb-3">Choose an option</p>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    {customizationOptions.map((option) => (
+                  <p className="text-sm font-semibold text-gray-700 mb-3">Customize your order</p>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {['Combo', 'Solo'].map((size) => (
                       <button
-                        key={option.value}
+                        key={size}
                         type="button"
-                        onClick={() => handleOptionChange(option.value, option.price)}
-                        className={`rounded-3xl border px-5 py-4 text-left transition ${
-                          selectedOption === option.value
+                        onClick={() => {
+                          setSelectedSize(size);
+                          if (size === 'Combo') {
+                            setSelectedSoup(null);
+                            setSelectedDrink(null);
+                            setSelectedDrinkSize('Regular');
+                            setDrinkSizePrice(30);
+                          }
+                        }}
+                        className={`rounded-2xl border px-4 py-3 text-center transition font-semibold ${
+                          selectedSize === size
                             ? 'border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
-                            : 'border-gray-200 bg-white text-gray-700 hover:border-kamora-orange'
+                            : 'border-gray-300 bg-white text-gray-700 hover:border-kamora-orange'
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-3">
-                          <span>{option.label}</span>
-                          <span className="text-sm text-kamora-orange">+₱{option.price}</span>
-                        </div>
+                        {size}
                       </button>
                     ))}
                   </div>
                 </div>
 
+                {/* Combo Add-ons */}
+                {selectedSize === 'Combo' && (
+                  <>
+                    {/* Soup Selection */}
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700 mb-3">Choose your soup</p>
+                      <div className="relative">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => {
+                              const container = document.getElementById('soup-carousel');
+                              if (container) container.scrollLeft -= 200;
+                            }}
+                            className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
+                          >
+                            ‹
+                          </button>
+                          <div 
+                            id="soup-carousel"
+                            className="flex-1 flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+                          >
+                            {menuItems
+                              .filter((item) => item.category === 'soup')
+                              .map((soup) => (
+                                <button
+                                  key={soup.id}
+                                  type="button"
+                                  onClick={() => setSelectedSoup(soup.name)}
+                                  className={`flex-shrink-0 w-32 rounded-2xl border overflow-hidden transition ${
+                                    selectedSoup === soup.name
+                                      ? 'border-kamora-orange bg-kamora-orange/10'
+                                      : 'border-gray-200 bg-white hover:border-kamora-orange'
+                                  }`}
+                                >
+                                  <div className="relative w-full h-32 overflow-hidden bg-gray-100">
+                                    <img
+                                      src={soup.image}
+                                      alt={soup.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div className="p-2 text-center">
+                                    <span className="font-semibold text-xs text-kamora-dark block">{soup.name}</span>
+                                  </div>
+                                </button>
+                              ))}
+                          </div>
+                          <button
+                            onClick={() => {
+                              const container = document.getElementById('soup-carousel');
+                              if (container) container.scrollLeft += 200;
+                            }}
+                            className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
+                          >
+                            ›
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Drink Selection */}
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700 mb-3">Choose your drink</p>
+                      <div className="relative">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => {
+                              const container = document.getElementById('drink-carousel');
+                              if (container) container.scrollLeft -= 200;
+                            }}
+                            className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
+                          >
+                            ‹
+                          </button>
+                          <div 
+                            id="drink-carousel"
+                            className="flex-1 flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+                          >
+                            {menuItems
+                              .filter((item) => item.category === 'drinks')
+                              .map((drink) => (
+                                <button
+                                  key={drink.id}
+                                  type="button"
+                                  onClick={() => setSelectedDrink(drink.name)}
+                                  className={`flex-shrink-0 w-32 rounded-2xl border overflow-hidden transition ${
+                                    selectedDrink === drink.name
+                                      ? 'border-kamora-orange bg-kamora-orange/10'
+                                      : 'border-gray-200 bg-white hover:border-kamora-orange'
+                                  }`}
+                                >
+                                  <div className="relative w-full h-32 overflow-hidden bg-gray-100">
+                                    <img
+                                      src={drink.image}
+                                      alt={drink.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div className="p-2 text-center">
+                                    <span className="font-semibold text-xs text-kamora-dark block">{drink.name}</span>
+                                  </div>
+                                </button>
+                              ))}
+                          </div>
+                          <button
+                            onClick={() => {
+                              const container = document.getElementById('drink-carousel');
+                              if (container) container.scrollLeft += 200;
+                            }}
+                            className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
+                          >
+                            ›
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Drink Size Selection */}
+                      {selectedDrink && (
+                        <div className="mt-4">
+                          <p className="text-sm font-semibold text-gray-700 mb-3">Choose your drink size</p>
+                          <div className="grid grid-cols-2 gap-3">
+                            {[
+                              { size: 'Regular', price: 0 },
+                              { size: 'Large', price: 10 }
+                            ].map((option) => (
+                              <button
+                                key={option.size}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedDrinkSize(option.size as 'Regular' | 'Large');
+                                  setDrinkSizePrice(option.price);
+                                }}
+                                className={`rounded-2xl border px-4 py-4 text-center transition ${
+                                  selectedDrinkSize === option.size
+                                    ? 'border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
+                                    : 'border-gray-300 bg-white text-gray-700 hover:border-kamora-orange'
+                                }`}
+                              >
+                                <span className="font-semibold block">{option.size}</span>
+                                <span className="text-sm text-kamora-orange">(+₱{option.price}.00)</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Combo Add-ons */}
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700 mb-3">Include Add-ons</p>
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {customizationOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => handleOptionChange(option.value, option.price)}
+                            className={selectedOption === option.value
+                              ? 'rounded-2xl border overflow-hidden transition border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
+                              : 'rounded-2xl border overflow-hidden transition border-gray-200 bg-white text-gray-700 hover:border-kamora-orange'}
+                          >
+                            <div className="flex flex-col h-full">
+                              <div className="relative w-full h-40 overflow-hidden bg-gray-100">
+                                <img
+                                  src={option.image}
+                                  alt={option.label}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="flex-1 p-3 flex flex-col justify-between">
+                                <span className="font-semibold text-sm">{option.label}</span>
+                                <span className="text-sm text-kamora-orange font-medium">+₱{option.price}</span>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Solo Add-ons */}
+                {selectedSize === 'Solo' && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-3">Include Add-ons</p>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      {customizationOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleOptionChange(option.value, option.price)}
+                          className={selectedOption === option.value
+                            ? 'rounded-2xl border overflow-hidden transition border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
+                            : 'rounded-2xl border overflow-hidden transition border-gray-200 bg-white text-gray-700 hover:border-kamora-orange'}
+                        >
+                          <div className="flex flex-col h-full">
+                            <div className="relative w-full h-40 overflow-hidden bg-gray-100">
+                              <img
+                                src={option.image}
+                                alt={option.label}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-1 p-3 flex flex-col justify-between">
+                              <span className="font-semibold text-sm">{option.label}</span>
+                              <span className="text-sm text-kamora-orange font-medium">+₱{option.price}</span>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Special Instructions */}
                 <div className="bg-kamora-cream rounded-3xl p-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Special instructions <span className="text-gray-500">(optional)</span>
@@ -342,29 +604,30 @@ const Menu: React.FC = () => {
                   <textarea
                     value={customizationNote}
                     onChange={(e) => setCustomizationNote(e.target.value)}
-                    rows={4}
+                    rows={3}
                     placeholder="Optional: Add requests like less salt, extra sauce, or no onions"
                     className="w-full rounded-2xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kamora-orange"
                   />
                 </div>
-              </div>
 
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-500">Customization fee</p>
-                  <p className="text-lg font-bold text-kamora-orange">+₱{customOptionPrice.toFixed(2)}</p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    onClick={closeCustomization}
-                    variant="secondary"
-                    className="px-5 py-3 !bg-red-500 !text-white !border-red-500 hover:!bg-red-600 hover:!border-red-600"
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleAddToCart} variant="primary" className="px-5 py-3">
-                    Add to Cart
-                  </Button>
+                {/* Footer */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t pt-6">
+                  <div>
+                    <p className="text-sm text-gray-500">{selectedSize === 'Combo' ? 'Drink size' : 'Add-ons'} fee</p>
+                    <p className="text-lg font-bold text-kamora-orange">+₱{(selectedSize === 'Combo' ? drinkSizePrice : customOptionPrice).toFixed(2)}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button
+                      onClick={closeCustomization}
+                      variant="secondary"
+                      className="px-5 py-3 !bg-red-500 !text-white !border-red-500 hover:!bg-red-600 hover:!border-red-600"
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={handleAddToCart} variant="primary" className="px-5 py-3">
+                      Add to Cart
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

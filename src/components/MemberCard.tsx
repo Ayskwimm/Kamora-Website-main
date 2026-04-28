@@ -33,14 +33,16 @@ const MemberCard: React.FC<MemberCardProps> = ({ name, role, avatar }) => {
   };
 
   return (
-    <div className="card p-6 text-center hover:scale-105 transition-transform duration-300">
+    <div className="card p-6 text-center hover:scale-105 transition-transform duration-300 h-full">
       <div className="flex items-center justify-center mb-4">
         {avatar ? (
-          <img
-            src={avatar}
-            alt={name}
-            className="w-20 h-20 rounded-full object-cover"
-          />
+          <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+            <img
+              src={avatar}
+              alt={name}
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
         ) : (
           <div className={`w-20 h-20 rounded-full ${getRoleColor()} flex items-center justify-center text-white text-2xl font-bold`}>
             {getInitials(name)}
