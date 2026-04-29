@@ -18,8 +18,8 @@ const About: React.FC = () => {
     { name: 'Angel Comedia', role: 'Partner', avatar: comediaImg },
     { name: 'Ervin Lemuel Daño', role: 'Partner', avatar: danoImg },
     { name: 'Norlyn Diesta', role: 'Partner', avatar: diestaImg },
-    { name: 'James Clarence Paule', role: 'Partner', avatar: pauleImg },
     { name: 'Ronalyn Ortega', role: 'Partner', avatar: ortegaImg },
+    { name: 'James Clarence Paule', role: 'Partner', avatar: pauleImg },
     { name: 'Chanmae Reynalda', role: 'Partner', avatar: reynaldaImg },
     { name: 'Renelyn Villanueva', role: 'Partner', avatar: villanuevaImg },
   ];

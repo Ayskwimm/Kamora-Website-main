@@ -461,7 +461,7 @@ const Cart: React.FC = () => {
                             />
                             <div>
                               <p className="font-medium">{item.name}</p>
-                              <p className="text-sm text-gray-500">Qty: {item.quantity} × ${item.price.toFixed(2)}</p>
+                              <p className="text-sm text-gray-500">Qty: {item.quantity} × {item.displayPrice || `₱${item.price.toFixed(2)}`}</p>
                             </div>
                           </div>
                           <p className="font-semibold text-lg">${itemSubtotal}</p>
@@ -555,7 +555,7 @@ const Cart: React.FC = () => {
               />
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold text-kamora-dark break-words whitespace-normal">{item.name}</h4>
-                <p className="text-kamora-orange font-bold">${item.price.toFixed(2)}</p>
+                <p className="text-kamora-orange font-bold">{item.displayPrice || `₱${item.price.toFixed(2)}`}</p>
                 {item.customization && (
                   <p className="text-sm text-gray-500 mt-1">Customization: {item.customization}</p>
                 )}

@@ -42,6 +42,7 @@ const categories: { key: CategoryKey; label: string; icon: string; description: 
   { key: 'drinks', label: 'Drinks', icon: '🥤', description: 'Refreshing beverages to complete every meal.', image: iceTeaImg },
 ];
 
+
 const customizationOptions = [
   { label: 'Extra gravy', value: 'Extra gravy', price: 10, image: extraGravyImg },
   { label: 'Extra rice', value: 'Extra rice', price: 15, image: rice },
@@ -65,10 +66,10 @@ const menuItems: MenuItem[] = [
   { id: 'Cheesy-kamofile', name: 'Cheesy kamofile', category: 'meal', price: 128, priceLabel: '₱49.00', image: mealCheeseImg },
   { id: 'kamora-burger-with-cheese', name: 'Kamora burger with cheese', category: 'burger', price: 105, priceLabel: '₱49.00', image: burgerWithCheeseImg },
   { id: 'kamora-burger-deluxe', name: 'Kamora burger deluxe', category: 'burger', price: 115, priceLabel: '₱69.00', image: burgerDeluxeImg },
-  { id: 'kamo-bites-original', name: 'kamo-bites original', category: 'snacks', price: 102, priceLabel: '₱55.00', image: bitesOriginal},
-  { id: 'kamo-bites-spicy', name: 'kamo-bites spicy', category: 'snacks', price: 108, priceLabel: '₱65.00', image: bitesSpicy},
-  { id: 'kamo-bites-bbq', name: 'kamo-bites BBQ', category: 'snacks', price: 110, priceLabel: '₱65.00', image: bitesBbq},
-  { id: 'kamo-bites-buttered-garlic', name: 'kamo-bites buttered garlic', category: 'snacks', price: 114, priceLabel: '₱69.00', image: bitesGarlic },
+  { id: 'kamo-bites-original', name: '6 pcs kamo-bites original', category: 'snacks', price: 102, priceLabel: '₱55.00', image: bitesOriginal},
+  { id: 'kamo-bites-spicy', name: '6 pcs kamo-bites spicy', category: 'snacks', price: 108, priceLabel: '₱65.00', image: bitesSpicy},
+  { id: 'kamo-bites-bbq', name: '6 pcs kamo-bites BBQ', category: 'snacks', price: 110, priceLabel: '₱65.00', image: bitesBbq},
+  { id: 'kamo-bites-buttered-garlic', name: '6 pcs kamo-bites buttered garlic', category: 'snacks', price: 114, priceLabel: '₱69.00', image: bitesGarlic },
   { id: 'mushroom-soup', name: 'Mushroom soup', category: 'soup', price: 104, priceLabel: '₱39.00', comboPriceLabel: '₱89.00', comboPrice: 89, image: mushroomSoupImg },
   { id: 'crab-and-corn-soup', name: 'Crab and corn soup', category: 'soup', price: 106, priceLabel: '₱45.00', comboPriceLabel: '₱95.00', comboPrice: 95, image: soupImg },
   { id: 'ice-tea', name: 'Ice tea', category: 'drinks', price: 52, priceLabel: '₱19.00', image: iceTeaImg },
@@ -137,11 +138,11 @@ const Menu: React.FC = () => {
 
   const startCustomization = (item: MenuItem) => {
     setCustomizingItem(item);
-    setSelectedSize('Solo');
     setAddonQuantities({
       'Extra gravy': 0,
       'Extra rice': 0,
     });
+    setSelectedSize('Solo');
     setSelectedSoup(null);
     setSelectedDrink(null);
     setSelectedDrinkSize('Regular');
@@ -162,8 +163,18 @@ const Menu: React.FC = () => {
   const handleAddToCart = () => {
     if (!customizingItem) return;
 
-    let customizationText = `${selectedSize}`;
+    const isDrinkItem = customizingItem.category === 'drinks';
+    let customizationText = isDrinkItem ? selectedDrinkSize : `${selectedSize}`;
     let totalExtraPrice = 0;
+    const drinkPrice = selectedDrink
+      ? (customizingItem.category === 'burger' || customizingItem.category === 'snacks' || customizingItem.category === 'soup')
+        ? selectedDrinkSize === 'Large'
+          ? 29
+          : 19
+        : selectedDrinkSize === 'Large'
+        ? 10
+        : 0
+      : 0;
     const addonLines: string[] = [];
 
     customizationOptions.forEach((option) => {
@@ -177,9 +188,15 @@ const Menu: React.FC = () => {
     if (selectedSize === 'Combo') {
       if (selectedSoup) {
         customizationText += ` - Soup: ${selectedSoup}`;
-        totalExtraPrice += (comboDisplayPrice - customizingItem.price);
+        totalExtraPrice += comboDisplayPrice - customizingItem.price;
       }
-      if (selectedDrink) customizationText += ` - Drink: ${selectedDrink} (${selectedDrinkSize})`;
+      if (selectedDrink) {
+        customizationText += ` - Drink: ${selectedDrink} (${selectedDrinkSize})`;
+        totalExtraPrice += drinkPrice;
+      }
+    } else if (!isDrinkItem && (customizingItem.category === 'burger' || customizingItem.category === 'snacks' || customizingItem.category === 'soup') && selectedDrink) {
+      customizationText += ` - Drink: ${selectedDrink} (${selectedDrinkSize})`;
+      totalExtraPrice += drinkPrice;
     }
 
     if (addonLines.length > 0) {
@@ -188,11 +205,13 @@ const Menu: React.FC = () => {
 
     const sanitizedCustomization = customizationText.trim().replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').toLowerCase();
     const cartItemId = customizingItem.id + (sanitizedCustomization ? `-${sanitizedCustomization}` : '');
+    const itemPrice = customizingItem.category === 'drinks' ? (selectedDrinkSize === 'Large' ? 29 : 19) : customizingItem.price;
 
     addItem({
       id: cartItemId,
       name: customizingItem.name,
-      price: customizingItem.price,
+      price: itemPrice,
+      displayPrice: customizingItem.priceLabel,
       image: customizingItem.image,
       customization: customizationText || undefined,
       extraPrice: totalExtraPrice || undefined,
@@ -211,6 +230,19 @@ const Menu: React.FC = () => {
   };
 
   const activeCategoryData = activeCategory ? categories.find((category) => category.key === activeCategory) : null;
+  const isMealItem = customizingItem?.category === 'meal';
+  const isBurgerItem = customizingItem?.category === 'burger';
+  const isSnackItem = customizingItem?.category === 'snacks';
+  const isSoupItem = customizingItem?.category === 'soup';
+  const isDrinkItem = customizingItem?.category === 'drinks';
+
+  const currentCustomizationOptions = isMealItem
+    ? customizationOptions
+    : isSnackItem
+    ? customizationOptions.filter((option) => option.value === 'Extra gravy')
+    : isSoupItem
+    ? customizationOptions.filter((option) => option.value === 'Extra rice')
+    : [];
 
   const getComboPrice = (): number => {
     if (!selectedSize || selectedSize === 'Solo' || !customizingItem || !selectedSoup) return 0;
@@ -218,12 +250,21 @@ const Menu: React.FC = () => {
   };
 
   const comboDisplayPrice = getComboPrice();
-
-  const addonTotalPrice = customizationOptions.reduce(
+  const mealAddonTotal = currentCustomizationOptions.reduce(
     (sum, option) => sum + (addonQuantities[option.value] || 0) * option.price,
     0
   );
-
+  const drinkItemPrice = isDrinkItem ? (selectedDrinkSize === 'Large' ? 29 : 19) : customizingItem?.price ?? 0;
+  const drinkAddonPrice = selectedDrink
+    ? (customizingItem?.category === 'burger' || customizingItem?.category === 'snacks' || customizingItem?.category === 'soup')
+      ? selectedDrinkSize === 'Large'
+        ? 29
+        : 19
+      : selectedDrinkSize === 'Large'
+      ? 10
+      : 0
+    : 0;
+  const addonTotalPrice = mealAddonTotal + drinkAddonPrice;
   const totalAddonFee = addonTotalPrice;
 
   const isComboRequirementsMet = selectedSize === 'Combo' ? selectedSoup && selectedDrink : true;
@@ -384,246 +425,233 @@ const Menu: React.FC = () => {
                   alt={selectedSize === 'Combo' ? 'Combo Meal' : customizingItem.name}
                   className="w-full max-w-xs h-auto object-cover rounded-2xl mb-4"
                 />
-                <h4 className="text-lg font-bold text-kamora-dark text-center">{customizingItem.name} - {selectedSize}</h4>
-                {selectedSize === 'Solo' && (
+                <h4 className="text-lg font-bold text-kamora-dark text-center">
+                  {customizingItem.name}{isMealItem ? ` - ${selectedSize}` : ''}
+                </h4>
+                {isDrinkItem ? (
+                  <p className="mt-2 text-xl font-bold text-kamora-orange text-center">₱{drinkItemPrice.toFixed(2)}</p>
+                ) : selectedSize === 'Solo' ? (
                   <p className="mt-2 text-xl font-bold text-kamora-orange text-center">{customizingItem.priceLabel}</p>
-                )}
-                {selectedSize === 'Combo' && comboDisplayPrice > 0 && (
+                ) : selectedSize === 'Combo' && comboDisplayPrice > 0 ? (
                   <p className="mt-2 text-sm font-semibold text-kamora-orange text-center">
                     ₱{comboDisplayPrice.toFixed(2)}
                   </p>
-                )}
+                ) : null}
               </div>
 
               <div className="md:w-2/3 p-6 space-y-6">
                 <div>
                   <p className="text-sm font-semibold text-gray-700 mb-3">Customize your order</p>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {['Combo', 'Solo'].map((size) => (
-                      <button
-                        key={size}
-                        type="button"
-                        onClick={() => {
-                          setSelectedSize(size);
-                          if (size === 'Combo') {
-                            setSelectedSoup(null);
-                            setSelectedDrink(null);
-                            setSelectedDrinkSize('Regular');
-                          }
-                        }}
-                        className={`rounded-2xl border px-4 py-3 text-center transition font-semibold ${
-                          selectedSize === size
-                            ? 'border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
-                            : 'border-gray-300 bg-white text-gray-700 hover:border-kamora-orange'
-                        }`}
-                      >
-                        {size}
-                      </button>
-                    ))}
-                  </div>
+                  {isMealItem && (
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                      {['Combo', 'Solo'].map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => {
+                            setSelectedSize(size);
+                            if (size === 'Combo') {
+                              setSelectedSoup(null);
+                              setSelectedDrink(null);
+                              setSelectedDrinkSize('Regular');
+                            }
+                          }}
+                          className={`rounded-2xl border px-4 py-3 text-center transition font-semibold ${
+                            selectedSize === size
+                              ? 'border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
+                              : 'border-gray-300 bg-white text-gray-700 hover:border-kamora-orange'
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Combo Add-ons */}
-                {selectedSize === 'Combo' && (
+                {(selectedSize === 'Combo' || isBurgerItem || isSnackItem || isSoupItem || isDrinkItem) && (
                   <>
-                    {/* Soup Selection */}
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700 mb-3">Choose your soup</p>
-                      <div className="relative">
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => {
-                              const container = document.getElementById('soup-carousel');
-                              if (container) container.scrollLeft -= 200;
-                            }}
-                            className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
-                          >
-                            ‹
-                          </button>
-                          <div 
-                            id="soup-carousel"
-                            className="flex-1 flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
-                          >
-                            {menuItems
-                              .filter((item) => item.category === 'soup')
-                              .map((soup) => (
-                                <button
-                                  key={soup.id}
-                                  type="button"
-                                  onClick={() => setSelectedSoup(soup.name)}
-                                  className={`flex-shrink-0 w-32 rounded-2xl border overflow-hidden transition ${
-                                    selectedSoup === soup.name
-                                      ? 'border-kamora-orange bg-kamora-orange/10'
-                                      : 'border-gray-200 bg-white hover:border-kamora-orange'
-                                  }`}
-                                >
-                                  <div className="relative w-full h-32 overflow-hidden bg-gray-100">
-                                    <img
-                                      src={soup.image}
-                                      alt={soup.name}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  </div>
-                                  <div className="p-2 text-center">
-                                    <span className="font-semibold text-xs text-kamora-dark block">{soup.name}</span>
-                                  </div>
-                                </button>
-                              ))}
-                          </div>
-                          <button
-                            onClick={() => {
-                              const container = document.getElementById('soup-carousel');
-                              if (container) container.scrollLeft += 200;
-                            }}
-                            className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
-                          >
-                            ›
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Drink Selection */}
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700 mb-3">Choose your drink</p>
-                      <div className="relative">
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => {
-                              const container = document.getElementById('drink-carousel');
-                              if (container) container.scrollLeft -= 200;
-                            }}
-                            className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
-                          >
-                            ‹
-                          </button>
-                          <div 
-                            id="drink-carousel"
-                            className="flex-1 flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
-                          >
-                            {menuItems
-                              .filter((item) => item.category === 'drinks')
-                              .map((drink) => (
-                                <button
-                                  key={drink.id}
-                                  type="button"
-                                  onClick={() => setSelectedDrink(drink.name)}
-                                  className={`flex-shrink-0 w-32 rounded-2xl border overflow-hidden transition ${
-                                    selectedDrink === drink.name
-                                      ? 'border-kamora-orange bg-kamora-orange/10'
-                                      : 'border-gray-200 bg-white hover:border-kamora-orange'
-                                  }`}
-                                >
-                                  <div className="relative w-full h-32 overflow-hidden bg-gray-100">
-                                    <img
-                                      src={drink.image}
-                                      alt={drink.name}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  </div>
-                                  <div className="p-2 text-center">
-                                    <span className="font-semibold text-xs text-kamora-dark block">{drink.name}</span>
-                                  </div>
-                                </button>
-                              ))}
-                          </div>
-                          <button
-                            onClick={() => {
-                              const container = document.getElementById('drink-carousel');
-                              if (container) container.scrollLeft += 200;
-                            }}
-                            className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
-                          >
-                            ›
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Drink Size Selection */}
-                      {selectedDrink && (
-                        <div className="mt-4">
-                          <p className="text-sm font-semibold text-gray-700 mb-3">Choose your drink size</p>
-                          <div className="grid grid-cols-2 gap-3">
-                            {[
-                              { size: 'Regular', price: 0 },
-                              { size: 'Large', price: 10 }
-                            ].map((option) => (
-                              <button
-                                key={option.size}
-                                type="button"
-                                onClick={() => {
-                                  setSelectedDrinkSize(option.size as 'Regular' | 'Large');
-                                }}
-                                className={`rounded-2xl border px-4 py-4 text-center transition ${
-                                  selectedDrinkSize === option.size
-                                    ? 'border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
-                                    : 'border-gray-300 bg-white text-gray-700 hover:border-kamora-orange'
-                                }`}
-                              >
-                                <span className="font-semibold block">{option.size}</span>
-                                <span className="text-sm text-kamora-orange">(+₱{option.price}.00)</span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Combo Add-ons */}
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700 mb-3">Include Add-ons</p>
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {customizationOptions.map((option) => {
-                          const qty = addonQuantities[option.value] || 0;
-                          return (
-                            <div
-                              key={option.value}
-                              className="rounded-2xl border border-gray-200 bg-white overflow-hidden transition"
+                    {isDrinkItem ? (
+                      <div>
+                        <p className="text-sm font-semibold text-gray-700 mb-3">Choose your size</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          {[
+                            { size: 'Regular', price: 19, label: '₱19.00' },
+                            { size: 'Large', price: 29, label: '₱29.00' },
+                          ].map((option) => (
+                            <button
+                              key={option.size}
+                              type="button"
+                              onClick={() => setSelectedDrinkSize(option.size as 'Regular' | 'Large')}
+                              className={`rounded-2xl border px-4 py-4 text-center transition ${
+                                selectedDrinkSize === option.size
+                                  ? 'border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
+                                  : 'border-gray-300 bg-white text-gray-700 hover:border-kamora-orange'
+                              }`}
                             >
-                              <div className="relative w-full h-40 overflow-hidden bg-gray-100">
-                                <img
-                                  src={option.image}
-                                  alt={option.label}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                              <div className="p-4 space-y-3">
-                                <div>
-                                  <p className="font-semibold text-sm text-kamora-dark">{option.label}</p>
-                                  <p className="text-sm text-kamora-orange font-medium">+₱{option.price}</p>
+                              <span className="font-semibold block">{option.size}</span>
+                              <span className="text-sm text-kamora-orange">{option.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {selectedSize === 'Combo' && (
+                          <div>
+                            <p className="text-sm font-semibold text-gray-700 mb-3">Choose your soup</p>
+                            <div className="relative">
+                              <div className="flex items-center gap-3">
+                                <button
+                                  onClick={() => {
+                                    const container = document.getElementById('soup-carousel');
+                                    if (container) container.scrollLeft -= 200;
+                                  }}
+                                  className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
+                                >
+                                  ‹
+                                </button>
+                                <div
+                                  id="soup-carousel"
+                                  className="flex-1 flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+                                >
+                                  {menuItems
+                                    .filter((item) => item.category === 'soup')
+                                    .map((soup) => (
+                                      <button
+                                        key={soup.id}
+                                        type="button"
+                                        onClick={() => setSelectedSoup(soup.name)}
+                                        className={`flex-shrink-0 w-32 rounded-2xl border overflow-hidden transition ${
+                                          selectedSoup === soup.name
+                                            ? 'border-kamora-orange bg-kamora-orange/10'
+                                            : 'border-gray-200 bg-white hover:border-kamora-orange'
+                                        }`}
+                                      >
+                                        <div className="relative w-full h-32 overflow-hidden bg-gray-100">
+                                          <img
+                                            src={soup.image}
+                                            alt={soup.name}
+                                            className="w-full h-full object-cover"
+                                          />
+                                        </div>
+                                        <div className="p-2 text-center">
+                                          <span className="font-semibold text-xs text-kamora-dark block">{soup.name}</span>
+                                        </div>
+                                      </button>
+                                    ))}
                                 </div>
-                                <div className="flex items-center justify-between rounded-full border border-gray-200 bg-gray-50 px-3 py-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => updateAddonQuantity(option.value, Math.max(0, qty - 1))}
-                                    className="h-8 w-8 rounded-full bg-white text-kamora-dark shadow-sm hover:bg-gray-100"
-                                  >
-                                    −
-                                  </button>
-                                  <span className="text-sm font-semibold">{qty}</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => updateAddonQuantity(option.value, qty + 1)}
-                                    className="h-8 w-8 rounded-full bg-white text-kamora-dark shadow-sm hover:bg-gray-100"
-                                  >
-                                    +
-                                  </button>
-                                </div>
+                                <button
+                                  onClick={() => {
+                                    const container = document.getElementById('soup-carousel');
+                                    if (container) container.scrollLeft += 200;
+                                  }}
+                                  className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
+                                >
+                                  ›
+                                </button>
                               </div>
                             </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+                          </div>
+                        )}
+
+                        <div>
+                          <p className="text-sm font-semibold text-gray-700 mb-3">Choose your drink</p>
+                          <div className="relative">
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => {
+                                  const container = document.getElementById('drink-carousel');
+                                  if (container) container.scrollLeft -= 200;
+                                }}
+                                className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
+                              >
+                                ‹
+                              </button>
+                              <div
+                                id="drink-carousel"
+                                className="flex-1 flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+                              >
+                                {menuItems
+                                  .filter((item) => item.category === 'drinks')
+                                  .map((drink) => (
+                                    <button
+                                      key={drink.id}
+                                      type="button"
+                                      onClick={() => setSelectedDrink(drink.name)}
+                                      className={`flex-shrink-0 w-32 rounded-2xl border overflow-hidden transition ${
+                                        selectedDrink === drink.name
+                                          ? 'border-kamora-orange bg-kamora-orange/10'
+                                          : 'border-gray-200 bg-white hover:border-kamora-orange'
+                                      }`}
+                                    >
+                                      <div className="relative w-full h-32 overflow-hidden bg-gray-100">
+                                        <img
+                                          src={drink.image}
+                                          alt={drink.name}
+                                          className="w-full h-full object-cover"
+                                        />
+                                      </div>
+                                      <div className="p-2 text-center">
+                                        <span className="font-semibold text-xs text-kamora-dark block">{drink.name}</span>
+                                      </div>
+                                    </button>
+                                  ))}
+                              </div>
+                              <button
+                                onClick={() => {
+                                  const container = document.getElementById('drink-carousel');
+                                  if (container) container.scrollLeft += 200;
+                                }}
+                                className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center text-gray-700 transition"
+                              >
+                                ›
+                              </button>
+                            </div>
+                          </div>
+
+                          {selectedDrink && (
+                            <div className="mt-4">
+                              <p className="text-sm font-semibold text-gray-700 mb-3">Choose your drink size</p>
+                              <div className="grid grid-cols-2 gap-3">
+                                {((customizingItem?.category === 'burger' || customizingItem?.category === 'snacks' || customizingItem?.category === 'soup')
+                                  ? [
+                                      { size: 'Regular', price: 19, label: '+₱19.00' },
+                                      { size: 'Large', price: 29, label: '+₱29.00' },
+                                    ]
+                                  : [
+                                      { size: 'Regular', price: 0, label: '₱0.00' },
+                                      { size: 'Large', price: 10, label: '+₱10.00' },
+                                    ]
+                                ).map((option) => (
+                                  <button
+                                    key={option.size}
+                                    type="button"
+                                    onClick={() => setSelectedDrinkSize(option.size as 'Regular' | 'Large')}
+                                    className={`rounded-2xl border px-4 py-4 text-center transition ${
+                                      selectedDrinkSize === option.size
+                                        ? 'border-kamora-orange bg-kamora-orange/10 text-kamora-dark'
+                                        : 'border-gray-300 bg-white text-gray-700 hover:border-kamora-orange'
+                                    }`}
+                                  >
+                                    <span className="font-semibold block">{option.size}</span>
+                                    <span className="text-sm text-kamora-orange">{option.label}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
 
-                {/* Solo Add-ons */}
-                {selectedSize === 'Solo' && (
+                {(isMealItem || isSnackItem || isSoupItem) && (
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-3">Include Add-ons</p>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      {customizationOptions.map((option) => {
+                      {currentCustomizationOptions.map((option) => {
                         const qty = addonQuantities[option.value] || 0;
                         return (
                           <div
